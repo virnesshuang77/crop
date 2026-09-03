@@ -555,6 +555,15 @@ button{
 .retry-btn:hover{
   background:var(--green-dark);
 }
+.retry-btn:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+.retry-btn:disabled:hover{
+  background:var(--green);
+}
+
 
 /* =========================
    Footer
@@ -795,6 +804,9 @@ button{
     <h2>AI 分析暫時無法完成</h2>
     <p id="errorMessage">目前無法連接分析服務。</p>
     <button class="retry-btn" id="retryBtn">重新分析</button>
+    <div id="cooldownHint" style="margin-top:9px;color:#8a948e;font-size:12px;">
+      每次 AI 分析後需等待 10 秒才能再次分析。
+    </div>
   </section>
 
   <!-- Result -->
@@ -1164,7 +1176,19 @@ function renderResultLanguage(){
   document.querySelector(".loading h2").textContent=t.loading;
   document.querySelector(".loading p").textContent=t.loadingSub;
   document.querySelector(".error-box h2").textContent=t.errorTitle;
-  document.getElementById("retryBtn").textContent=t.retry;
+  if(Date.now() < analyzeCooldownUntil){
+    updateAnalyzeCooldown();
+  }else{
+    document.getElementById("retryBtn").disabled = false;
+    document.getElementById("retryBtn").textContent=t.retry;
+  }
+
+  const cooldownHint = document.getElementById("cooldownHint");
+  if(cooldownHint){
+    cooldownHint.textContent = en
+      ? "Please wait 10 seconds before running another AI analysis."
+      : "每次 AI 分析後需等待 10 秒才能再次分析。";
+  }
 
   // Score overview
   document.querySelector(".score-label").textContent=t.overall;
@@ -1289,7 +1313,60 @@ function showResult(){
    呼叫 Cloudflare Worker
 ========================= */
 
+const ANALYZE_COOLDOWN_MS = 10000;
+let analyzeCooldownUntil = 0;
+let analyzeCooldownTimer = null;
+let analyzeInProgress = false;
+
+function updateAnalyzeCooldown(){
+  const button = document.getElementById("retryBtn");
+  if(!button) return;
+
+  const remainingMs = analyzeCooldownUntil - Date.now();
+
+  if(remainingMs <= 0){
+    button.disabled = false;
+    button.textContent = currentLanguage === "en" ? "Analyze Again" : "重新分析";
+
+    if(analyzeCooldownTimer){
+      clearInterval(analyzeCooldownTimer);
+      analyzeCooldownTimer = null;
+    }
+    return;
+  }
+
+  const seconds = Math.ceil(remainingMs / 1000);
+  button.disabled = true;
+  button.textContent = currentLanguage === "en"
+    ? `Wait ${seconds}s`
+    : `${seconds} 秒後可再次分析`;
+}
+
+function startAnalyzeCooldown(){
+  analyzeCooldownUntil = Date.now() + ANALYZE_COOLDOWN_MS;
+
+  if(analyzeCooldownTimer){
+    clearInterval(analyzeCooldownTimer);
+  }
+
+  updateAnalyzeCooldown();
+
+  analyzeCooldownTimer = setInterval(updateAnalyzeCooldown,250);
+}
+
 async function analyze(){
+
+  if(analyzeInProgress){
+    return;
+  }
+
+  if(Date.now() < analyzeCooldownUntil){
+    updateAnalyzeCooldown();
+    return;
+  }
+
+  analyzeInProgress = true;
+  startAnalyzeCooldown();
 
   showLoading();
 
@@ -1375,6 +1452,8 @@ async function analyze(){
         ? error.message
         : "無法連接 AI 分析服務。"
     );
+  } finally {
+    analyzeInProgress = false;
   }
 }
 
