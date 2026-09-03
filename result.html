@@ -94,6 +94,7 @@ button{
   font-size:14px;
 }
 
+.lang-btn-result{border:1px solid var(--border);background:#fff;color:var(--green-dark);border-radius:10px;padding:10px 13px;cursor:pointer;font-weight:700;white-space:nowrap}.lang-btn-result:hover{background:var(--green-soft)}
 .back-btn{
   border:1px solid var(--border);
   background:#fff;
@@ -715,9 +716,9 @@ button{
       </div>
     </div>
 
-    <button class="back-btn" id="backBtn">
+    <div style="display:flex;align-items:center;gap:8px"><button class="lang-btn-result" id="languageBtn" type="button">English</button><button class="back-btn" id="backBtn">
       ← 重新模擬
-    </button>
+    </button></div>
   </header>
 
   <!-- Conditions -->
@@ -1043,6 +1044,7 @@ button{
 const API_ENDPOINT = "https://agri-alchemy.virnesshuang.workers.dev/api/analyze";
 
 let currentState = null;
+let currentLanguage = localStorage.getItem("agriLanguage") === "en" ? "en" : "zh";
 
 /* =========================
    工具
@@ -1102,6 +1104,66 @@ function formatDate(){
 }
 
 /* =========================
+   中英雙語結果介面
+========================= */
+const resultCropEN = {"番茄":"Tomato","生菜":"Lettuce","小白菜":"Bok choy","高麗菜":"Cabbage","菠菜":"Spinach","空心菜":"Water spinach","芥藍":"Chinese broccoli","青江菜":"Pak choi","芥菜":"Mustard greens","莧菜":"Amaranth","羽衣甘藍":"Kale","韭菜":"Chinese chives","辣椒":"Chili pepper","甜椒":"Bell pepper","小黃瓜":"Cucumber","茄子":"Eggplant","南瓜":"Pumpkin","櫛瓜":"Zucchini","苦瓜":"Bitter melon","絲瓜":"Luffa","冬瓜":"Winter melon","秋葵":"Okra","胡蘿蔔":"Carrot","馬鈴薯":"Potato","地瓜":"Sweet potato","山藥":"Chinese yam","蘿蔔":"Radish","甜菜根":"Beetroot","芋頭":"Taro","洋蔥":"Onion","大蒜":"Garlic","薑":"Ginger","毛豆":"Edamame","黃豆":"Soybean","綠豆":"Mung bean","紅豆":"Adzuki bean","豌豆":"Pea","四季豆":"Green bean","花生":"Peanut","水稻":"Rice","玉米":"Corn","小麥":"Wheat","大麥":"Barley","燕麥":"Oat","高粱":"Sorghum","小米":"Millet","草莓":"Strawberry","蘋果":"Apple","葡萄":"Grape","香蕉":"Banana","橘子":"Mandarin","柳橙":"Orange","檸檬":"Lemon","柚子":"Pomelo","鳳梨":"Pineapple","芒果":"Mango","木瓜":"Papaya","西瓜":"Watermelon","哈密瓜":"Cantaloupe","奇異果":"Kiwi","桃子":"Peach","水蜜桃":"Nectarine","李子":"Plum","梨子":"Pear","櫻桃":"Cherry","柿子":"Persimmon","石榴":"Pomegranate","百香果":"Passion fruit","火龍果":"Dragon fruit","荔枝":"Lychee","龍眼":"Longan","榴槤":"Durian","椰子":"Coconut","酪梨":"Avocado","無花果":"Fig"};
+const resultMaps={
+  soil:{"火山土":"Volcanic soil","沖積土":"Alluvial soil","沙漠土":"Desert soil","海岸土":"Coastal soil","森林土":"Forest soil","冰川沉積土":"Glacial sediment soil","石灰質土":"Calcareous soil","紅土":"Red soil","黑土":"Chernozem","泥炭土":"Peat soil","人工改良土":"Artificially amended soil"},
+  light:{"太陽光":"Sunlight","人造光":"Artificial light"}, water:{"一般水":"General water","乾淨水":"Clean water","高度純化水":"Highly purified water"},
+  fertilizer:{"不施肥":"No fertilizer","有機肥":"Organic fertilizer","氮肥":"Nitrogen fertilizer","磷肥":"Phosphorus fertilizer","鉀肥":"Potassium fertilizer","複合肥":"Compound fertilizer","鈣肥":"Calcium fertilizer","鎂肥":"Magnesium fertilizer","微量元素肥":"Micronutrient fertilizer"},
+  amount:{"無":"None","少量":"Low","適量":"Adequate","高量":"High","過量":"Excessive"}
+};
+const resultTextEN={
+  title:"Agricultural Alchemy", subtitle:"AI Agricultural Simulation Results", conditions:"Simulation Conditions", soil:"Soil", crop:"Crop", light:"Light", water:"Water", fertilizer:"Fertilizer", amount:"Fertilizer Amount", soilDesc:"Growing medium", cropDesc:"Selected crop", lightDesc:"Lighting source", waterDesc:"Irrigation source", fertDesc:"Fertilizer type", amountDesc:"Application level", loading:"AI is analyzing these agricultural conditions…", loadingSub:"Combining soil, crop, light, water and fertilizer conditions.", errorTitle:"AI analysis could not be completed", retry:"Analyze Again", overview:"AI Expected Results Overview", overall:"Overall suitability", growth:"Growth rate", health:"Plant health", waterFit:"Water suitability", nutrient:"Nutrient suitability", lightFit:"Light suitability", yield:"Yield potential", growthDesc:"Expected growth speed", healthDesc:"Overall health and stress tolerance", waterFitDesc:"Suitability of water quality and supply", nutrientDesc:"Balance of soil nutrients and fertilization", lightFitDesc:"Suitability of lighting conditions", yieldDesc:"Relative yield performance estimate", overallEval:"Overall assessment", aiSummary:"AI Analysis Summary", analysis:"Overall analysis", soilAnalysis:"Soil analysis", waterAnalysis:"Water analysis", lightAnalysis:"Light analysis", fertilizerAnalysis:"Fertilizer analysis", recommendations:"AI Recommendations & Optimization", risks:"Potential Risks & Limitations", final:"AI Final Conclusion", confidence:"AI confidence", disclaimer:"※ Results are AI-based simulation estimates from the selected conditions and do not represent actual agricultural trial results. Actual growth is also affected by cultivar, temperature, humidity, pests, soil composition and cultivation management.", back:"← Simulate Again", language:"繁體中文"
+};
+function resultDisplay(v,map){return currentLanguage==="en"?(map[v]||resultCropEN[v]||v):v;}
+function renderResultLanguage(){
+  const en=currentLanguage==="en"; document.documentElement.lang=en?"en":"zh-Hant";
+  document.title=en?"Agricultural Alchemy | AI Simulation Results":"農作物煉金術｜AI 模擬結果";
+  document.getElementById("languageBtn").textContent=en?resultTextEN.language:"English";
+  document.getElementById("backBtn").textContent=en?resultTextEN.back:"← 重新模擬";
+  if(!currentState) return;
+  document.getElementById("soilValue").textContent=resultDisplay(currentState.soil,resultMaps.soil);
+  document.getElementById("cropValue").textContent=resultDisplay(currentState.crop,{});
+  document.getElementById("lightValue").textContent=resultDisplay(currentState.light,resultMaps.light);
+  document.getElementById("waterValue").textContent=resultDisplay(currentState.water,resultMaps.water);
+  document.getElementById("fertilizerValue").textContent=resultDisplay(currentState.fertilizer,resultMaps.fertilizer);
+  document.getElementById("fertilizerAmountValue").textContent=resultDisplay(currentState.fertilizerAmount,resultMaps.amount);
+  const sectionTitles=document.querySelectorAll(".section-title");
+  if(sectionTitles[0]) sectionTitles[0].lastChild.textContent=en?resultTextEN.conditions:"本次模擬條件";
+  if(sectionTitles[1]) sectionTitles[1].lastChild.textContent=en?resultTextEN.overview:"AI 預期結果總覽";
+  if(sectionTitles[2]) sectionTitles[2].lastChild.textContent=en?resultTextEN.aiSummary:"AI 分析摘要";
+  if(sectionTitles[3]) sectionTitles[3].lastChild.textContent=en?resultTextEN.recommendations:"AI 建議與優化方向";
+  if(sectionTitles[4]) sectionTitles[4].lastChild.textContent=en?resultTextEN.risks:"潛在風險與限制";
+  const labels=document.querySelectorAll(".condition-label"), desc=document.querySelectorAll(".condition-desc");
+  [resultTextEN.soil,resultTextEN.crop,resultTextEN.light,resultTextEN.water,resultTextEN.fertilizer,resultTextEN.amount].forEach((x,i)=>{if(en)labels[i].textContent=x;});
+  [resultTextEN.soilDesc,resultTextEN.cropDesc,resultTextEN.lightDesc,resultTextEN.waterDesc,resultTextEN.fertDesc,resultTextEN.amountDesc].forEach((x,i)=>{if(en)desc[i].textContent=x;});
+  if(en){
+    document.querySelector(".loading h2").textContent=resultTextEN.loading;
+    document.querySelector(".loading p").textContent=resultTextEN.loadingSub;
+    document.querySelector(".error-box h2").textContent=resultTextEN.errorTitle;
+    document.getElementById("retryBtn").textContent=resultTextEN.retry;
+    document.querySelector(".score-label").textContent=resultTextEN.overall;
+    const mt=document.querySelectorAll(".metric-top"), md=document.querySelectorAll(".metric-desc");
+    [resultTextEN.growth,resultTextEN.health,resultTextEN.waterFit,resultTextEN.nutrient,resultTextEN.lightFit,resultTextEN.yield].forEach((x,i)=>{if(mt[i])mt[i].lastChild.textContent=x;});
+    [resultTextEN.growthDesc,resultTextEN.healthDesc,resultTextEN.waterFitDesc,resultTextEN.nutrientDesc,resultTextEN.lightFitDesc,resultTextEN.yieldDesc].forEach((x,i)=>{if(md[i])md[i].textContent=x;});
+    document.querySelector(".score-total").textContent="/ 100";
+    document.querySelector(".rec-title").textContent=resultTextEN.overallEval;
+    document.querySelector(".conclusion-status small").textContent=resultTextEN.final;
+    document.querySelector(".confidence-label").textContent=resultTextEN.confidence;
+    document.querySelector(".disclaimer").textContent=resultTextEN.disclaimer;
+  }
+}
+
+document.getElementById("languageBtn").addEventListener("click",()=>{
+  currentLanguage=currentLanguage==="en"?"zh":"en";
+  localStorage.setItem("agriLanguage",currentLanguage);
+  if(currentState) currentState.language=currentLanguage;
+  renderResultLanguage();
+  analyze();
+});
+
+/* =========================
    讀取 index.html 的狀態
 ========================= */
 
@@ -1117,6 +1179,8 @@ function loadState(){
 
   try{
     currentState = JSON.parse(raw);
+    if(!localStorage.getItem("agriLanguage") && currentState.language) currentLanguage=currentState.language;
+    currentState.language=currentLanguage;
   }catch(error){
     throw new Error("模擬條件資料格式錯誤，請重新模擬。");
   }
@@ -1126,6 +1190,7 @@ function loadState(){
   }
 
   renderConditions();
+  renderResultLanguage();
 }
 
 /* =========================
@@ -1204,7 +1269,8 @@ async function analyze(){
     */
 
     const payload = {
-      state: currentState
+      state: currentState,
+      language: currentLanguage
     };
 
     const response = await fetch(API_ENDPOINT,{
