@@ -27,7 +27,10 @@ body{
     radial-gradient(circle at 90% 10%,rgba(178,138,69,.08),transparent 25%),
     var(--bg);
 }
-header{text-align:center;padding:34px 20px 24px}
+header{text-align:center;padding:34px 20px 24px;position:relative}
+.lang-btn{position:absolute;right:20px;top:20px;border:1px solid var(--line);background:#fff;color:var(--accent-dark);border-radius:999px;padding:8px 13px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(35,55,43,.06)}
+.lang-btn:hover{background:#f4f8f4}
+@media(max-width:650px){.lang-btn{right:12px;top:12px}}
 .logo{
   display:inline-flex;align-items:center;gap:10px;
   color:var(--accent-dark);font-size:13px;letter-spacing:2px;font-weight:700
@@ -203,6 +206,7 @@ select:focus{
 
 <body>
 <header>
+  <button class="lang-btn" id="languageBtn" type="button">English</button>
   <div class="logo"><div class="logo-mark">✦</div>AGRICULTURAL ALCHEMY</div>
   <h1>農作物煉金術</h1>
   <p class="subtitle">土壤 × 作物 × 水質 × 光照 × 肥料　探索植物生長的最佳組合</p>
@@ -475,7 +479,7 @@ select:focus{
     <span class="chip">施肥量：<b id="summaryFertilizerAmount">無</b></span>
   </div>
 
-  <button class="run-button" onclick="runSimulation()">⚗ 開始模擬 RUN</button>
+  <button class="run-button" id="runButton" onclick="runSimulation()">⚗ 開始模擬 RUN</button>
 
   <div class="result" id="result">
     <div class="result-title">🌱 模擬條件已建立</div>
@@ -594,7 +598,8 @@ let state = {
   water:"乾淨水",
   light:"太陽光",
   fertilizer:"不施肥",
-  fertilizerAmount:"無"
+  fertilizerAmount:"無",
+  language:"zh"
 };
 
 function changeSoil(){
@@ -654,6 +659,120 @@ function runSimulation(){
   localStorage.setItem("agriSimulationState", JSON.stringify(state));
   window.location.href = "result.html";
 }
+
+/* =========================
+   中英雙語介面
+========================= */
+const cropNamesEN = {
+  "番茄":"Tomato","生菜":"Lettuce","小白菜":"Bok choy","高麗菜":"Cabbage","菠菜":"Spinach","空心菜":"Water spinach","芥藍":"Chinese broccoli","青江菜":"Pak choi","芥菜":"Mustard greens","莧菜":"Amaranth","羽衣甘藍":"Kale","韭菜":"Chinese chives","辣椒":"Chili pepper","甜椒":"Bell pepper","小黃瓜":"Cucumber","茄子":"Eggplant","南瓜":"Pumpkin","櫛瓜":"Zucchini","苦瓜":"Bitter melon","絲瓜":"Luffa","冬瓜":"Winter melon","秋葵":"Okra","胡蘿蔔":"Carrot","馬鈴薯":"Potato","地瓜":"Sweet potato","山藥":"Chinese yam","蘿蔔":"Radish","甜菜根":"Beetroot","芋頭":"Taro","洋蔥":"Onion","大蒜":"Garlic","薑":"Ginger","毛豆":"Edamame","黃豆":"Soybean","綠豆":"Mung bean","紅豆":"Adzuki bean","豌豆":"Pea","四季豆":"Green bean","花生":"Peanut","水稻":"Rice","玉米":"Corn","小麥":"Wheat","大麥":"Barley","燕麥":"Oat","高粱":"Sorghum","小米":"Millet","草莓":"Strawberry","蘋果":"Apple","葡萄":"Grape","香蕉":"Banana","橘子":"Mandarin","柳橙":"Orange","檸檬":"Lemon","柚子":"Pomelo","鳳梨":"Pineapple","芒果":"Mango","木瓜":"Papaya","西瓜":"Watermelon","哈密瓜":"Cantaloupe","奇異果":"Kiwi","桃子":"Peach","水蜜桃":"Nectarine","李子":"Plum","梨子":"Pear","櫻桃":"Cherry","柿子":"Persimmon","石榴":"Pomegranate","百香果":"Passion fruit","火龍果":"Dragon fruit","荔枝":"Lychee","龍眼":"Longan","榴槤":"Durian","椰子":"Coconut","酪梨":"Avocado","無花果":"Fig"
+};
+const uiEN = {
+  title:"Agricultural Alchemy",
+  subtitle:"Soil × Crop × Water × Light × Fertilizer — Explore the best combination for plant growth",
+  soilTitle:"① Soil", soilSub:"Choose the basic growing medium", soilLabel:"Soil type", soilBadge:"SOIL",
+  cropTitle:"② Crop", cropSub:"Nutritional and economic value", cropLabel:"Crop type", cropBadge:"CROP",
+  lightTitle:"③ Light", lightSub:"The main energy source for plants", lightLabel:"Lighting method", lightBadge:"LIGHT",
+  waterTitle:"④ Water", waterSub:"Water quality", waterLabel:"Water quality level", waterBadge:"WATER",
+  fertTitle:"⑤ Fertilizer", fertSub:"Provide additional nutrients", fertLabel:"Fertilizer type", fertBadge:"FERTILIZER",
+  amountTitle:"⑥ Fertilizer Amount", amountSub:"Set the application level", amountLabel:"Application amount", amountBadge:"AMOUNT",
+  nutrition:"Nutritional value:", economic:"Economic value:",
+  run:"⚗ Start Simulation RUN", created:"🌱 Simulation conditions created",
+  soilDesc:"Soil formed from weathered volcanic ash and rock.",
+  lightSun:"Natural sunlight with daily cycles and spectral variation.",
+  lightArtificial:"Artificial lighting with controllable intensity and photoperiod.",
+  lightNote:"More light is not always better. Future models will include <b>light intensity, photoperiod and light saturation</b>.",
+  waterNote:"Water quality is not simply “the cleaner, the better”.<br>Future models will include <b>mineral ions, salinity and pH</b>.",
+  fertilizerNote:"Without additional fertilizer, crops mainly rely on nutrients in the soil and water.<br>Future models will calculate nutrient replenishment by fertilizer type and amount.",
+  amountNote:"More fertilizer is not always better. Future models will distinguish deficiency, adequate supply and excess application.",
+  summarySoil:"Soil", summaryCrop:"Crop", summaryWater:"Water", summaryLight:"Light", summaryFertilizer:"Fertilizer", summaryAmount:"Amount",
+  generalWater:"General water", cleanWater:"Clean water", pureWater:"Highly purified water",
+  noFert:"No fertilizer", organic:"Organic fertilizer", nitrogen:"Nitrogen fertilizer", phosphorus:"Phosphorus fertilizer", potassium:"Potassium fertilizer", compound:"Compound fertilizer", calcium:"Calcium fertilizer", magnesium:"Magnesium fertilizer", micronutrient:"Micronutrient fertilizer",
+  none:"None", low:"Low", adequate:"Adequate", high:"High", excessive:"Excessive",
+  sunlight:"Sunlight", artificial:"Artificial light",
+  waterGeneralDesc:"Ordinary water quality with variable dissolved substances.", waterCleanDesc:"Low pollutant levels, suitable as a stable water source.", waterPureDesc:"Highly purified water with fewer dissolved minerals; not automatically better for plants.",
+  englishButton:"繁體中文"
+};
+const cropGroupsEN = ["Leafy greens","Fruit vegetables","Root & tuber crops","Legumes","Grains","Fruits"];
+const soilEN = {"火山土":"Volcanic soil","沖積土":"Alluvial soil","沙漠土":"Desert soil","海岸土":"Coastal soil","森林土":"Forest soil","冰川沉積土":"Glacial sediment soil","石灰質土":"Calcareous soil","紅土":"Red soil","黑土":"Chernozem","泥炭土":"Peat soil","人工改良土":"Artificially amended soil"};
+const fertilizerEN={"不施肥":"No fertilizer","有機肥":"Organic fertilizer","氮肥":"Nitrogen fertilizer","磷肥":"Phosphorus fertilizer","鉀肥":"Potassium fertilizer","複合肥":"Compound fertilizer","鈣肥":"Calcium fertilizer","鎂肥":"Magnesium fertilizer","微量元素肥":"Micronutrient fertilizer"};
+const amountEN={"無":"None","少量":"Low","適量":"Adequate","高量":"High","過量":"Excessive"};
+const lightEN={"太陽光":"Sunlight","人造光":"Artificial light"};
+const waterEN={"一般水":"General water","乾淨水":"Clean water","高度純化水":"Highly purified water"};
+
+function displayName(value){
+  if(state.language==="en") return cropNamesEN[value] || soilEN[value] || fertilizerEN[value] || amountEN[value] || lightEN[value] || waterEN[value] || value;
+  return value;
+}
+function setSelectLabels(selectId,map){
+  const el=document.getElementById(selectId); if(!el) return;
+  [...el.options].forEach(o=>{ o.textContent=map[o.value] || o.textContent; });
+}
+function renderLanguage(){
+  const en=state.language==="en";
+  document.documentElement.lang=en?"en":"zh-Hant";
+  document.title=en?"Agricultural Alchemy | Crop Simulation":"農作物煉金術｜Agricultural Alchemy";
+  document.getElementById("languageBtn").textContent=en?uiEN.englishButton:"English";
+  document.querySelector("h1").textContent=en?uiEN.title:"農作物煉金術";
+  document.querySelector(".subtitle").textContent=en?uiEN.subtitle:"土壤 × 作物 × 水質 × 光照 × 肥料　探索植物生長的最佳組合";
+
+  const heads=document.querySelectorAll(".panel-title"), subs=document.querySelectorAll(".panel-sub"), badges=document.querySelectorAll(".badge");
+  const titles=en?[uiEN.soilTitle,uiEN.cropTitle,uiEN.lightTitle,uiEN.waterTitle,uiEN.fertTitle,uiEN.amountTitle]:["① 土壤","② 農作物","③ 光照","④ 水質","⑤ 肥料","⑥ 施肥量"];
+  const sub=en?[uiEN.soilSub,uiEN.cropSub,uiEN.lightSub,uiEN.waterSub,uiEN.fertSub,uiEN.amountSub]:["選擇植物生長的基礎介質","營養價值與經濟價值","植物獲取能量的主要來源","水的潔淨度","提供作物額外養分","設定施肥的用量等級"];
+  const badge=["SOIL","CROP","LIGHT","WATER","FERTILIZER","AMOUNT"];
+  heads.forEach((e,i)=>e.textContent=titles[i]); subs.forEach((e,i)=>e.textContent=sub[i]); badges.forEach((e,i)=>e.textContent=badge[i]);
+  document.querySelectorAll(".select-wrap label")[0].textContent=en?uiEN.soilLabel:"土壤種類";
+  document.querySelectorAll(".select-wrap label")[1].textContent=en?uiEN.cropLabel:"作物種類";
+  document.querySelectorAll(".select-wrap label")[2].textContent=en?uiEN.lightLabel:"光照方式";
+  document.querySelectorAll(".select-wrap label")[3].textContent=en?uiEN.waterLabel:"水質等級";
+  document.querySelectorAll(".select-wrap label")[4].textContent=en?uiEN.fertLabel:"肥料種類";
+  document.querySelectorAll(".select-wrap label")[5].textContent=en?uiEN.amountLabel:"施肥量";
+
+  setSelectLabels("soilSelect",en?soilEN:Object.fromEntries(Object.keys(soilEN).map(k=>[k,k])));
+  setSelectLabels("cropSelect",en?cropNamesEN:Object.fromEntries(Object.keys(cropNamesEN).map(k=>[k,k])));
+  setSelectLabels("lightSelect",en?lightEN:Object.fromEntries(Object.keys(lightEN).map(k=>[k,k])));
+  setSelectLabels("waterSelect",en?waterEN:Object.fromEntries(Object.keys(waterEN).map(k=>[k,k])));
+  setSelectLabels("fertilizerSelect",en?fertilizerEN:Object.fromEntries(Object.keys(fertilizerEN).map(k=>[k,k])));
+  setSelectLabels("fertilizerAmountSelect",en?amountEN:Object.fromEntries(Object.keys(amountEN).map(k=>[k,k])));
+  const groups=document.querySelectorAll("#cropSelect optgroup");
+  const groupZH=["葉菜類","果菜類","根莖與塊莖類","豆類","穀物","水果"];
+  groups.forEach((g,i)=>g.label=en?cropGroupsEN[i]:groupZH[i]);
+
+  document.getElementById("soilDesc").textContent=en?uiEN.soilDesc:soilData[state.soil];
+  const cd=cropData[state.crop];
+  document.getElementById("cropName").textContent=displayName(state.crop);
+  if(en){
+    document.getElementById("cropNutrition").textContent="Crop-specific nutritional information is provided in the selected crop database.";
+    document.getElementById("cropEconomic").textContent="Crop-specific economic information is provided in the selected crop database.";
+  }else{
+    document.getElementById("cropNutrition").textContent=cd.nutrition;
+    document.getElementById("cropEconomic").textContent=cd.economic;
+  }
+  document.getElementById("lightDesc").textContent=en?(state.light==="太陽光"?uiEN.lightSun:uiEN.lightArtificial):lightData[state.light];
+  const wd=waterData[state.water];
+  document.getElementById("waterName").textContent=displayName(state.water);
+  document.getElementById("waterDesc").textContent=en?(state.water==="一般水"?uiEN.waterGeneralDesc:state.water==="乾淨水"?uiEN.waterCleanDesc:uiEN.waterPureDesc):wd[1];
+  document.querySelectorAll(".fert-note")[0].innerHTML=en?uiEN.fertilizerNote:"不額外施用肥料時，作物主要依靠土壤與水中的養分。<br>未來模型會依照不同肥料種類與施肥量計算養分補充效果。";
+  document.querySelectorAll(".fert-note")[1].innerHTML=en?uiEN.amountNote:"施肥量不是越高越好。未來模型會計算缺乏、適量與過量對作物生長的不同影響。";
+  document.querySelectorAll(".water-note")[0].innerHTML=en?uiEN.lightNote:"光照不代表越強越好。未來模型會加入 <b>光照強度、光週期與光飽和</b> 等參數。";
+  document.querySelectorAll(".water-note")[1].innerHTML=en?uiEN.waterNote:"水質不只是「越乾淨越好」。<br>未來模型會加入 <b>礦物離子、鹽分、pH</b> 等參數。";
+
+  const labels=en?[uiEN.summarySoil,uiEN.summaryCrop,uiEN.summaryWater,uiEN.summaryLight,uiEN.summaryFertilizer,uiEN.summaryAmount]:["土壤","作物","水質","光照","肥料","施肥量"];
+  document.querySelectorAll(".chip").forEach((e,i)=>{ const b=e.querySelector("b"); e.firstChild.textContent=labels[i]+"："; b.textContent=displayName([state.soil,state.crop,state.water,state.light,state.fertilizer,state.fertilizerAmount][i]); });
+  document.getElementById("runButton").textContent=en?uiEN.run:"⚗ 開始模擬 RUN";
+  document.querySelector(".result-title").textContent=en?uiEN.created:"🌱 模擬條件已建立";
+}
+
+function toggleLanguage(){
+  state.language=state.language==="en"?"zh":"en";
+  localStorage.setItem("agriLanguage",state.language);
+  renderLanguage();
+}
+
+document.getElementById("languageBtn").addEventListener("click",toggleLanguage);
+const savedLanguage=localStorage.getItem("agriLanguage");
+if(savedLanguage==="en") state.language="en";
+renderLanguage();
+
 </script>
 </body>
 </html>
