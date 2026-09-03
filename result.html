@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="農作物煉金術｜AI 農業模擬結果">
+<title>農作物煉金術｜AI 模擬結果</title>
+
+<style>
+*{
+  box-sizing:border-box;
+}
+
+:root{
+  --green:#2f7d57;
+  --green-dark:#20583d;
+  --green-light:#eaf5ee;
+  --green-soft:#f5faf7;
+  --text:#26352d;
+  --muted:#718078;
+  --border:#dfe8e2;
+  --danger:#d95c55;
+  --danger-bg:#fff6f5;
+  --warning:#d99220;
+  --warning-bg:#fff9ed;
+  --shadow:0 8px 26px rgba(38,67,52,.07);
+}
+
+body{
+  margin:0;
+  background:#f6f8f7;
+  color:var(--text);
+  font-family:
+    -apple-system,BlinkMacSystemFont,
+    "Noto Sans TC","Microsoft JhengHei",
+    "PingFang TC",sans-serif;
+  line-height:1.6;
+}
+
+button{
+  font:inherit;
+}
+
+.container{
+  width:min(1380px, calc(100% - 28px));
+  margin:0 auto;
+  padding:22px 0 40px;
+}
+
+/* =========================
+   Header
+========================= */
+
+.header{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  padding:20px 24px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:16px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:13px;
+}
+
+.logo{
+  width:48px;
+  height:48px;
+  border-radius:13px;
+  background:var(--green-light);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  flex:none;
+}
+
+.brand h1{
+  margin:0;
+  font-size:25px;
+  letter-spacing:.5px;
+}
+
+.brand p{
+  margin:2px 0 0;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.back-btn{
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--text);
+  border-radius:10px;
+  padding:10px 16px;
+  cursor:pointer;
+  transition:.2s;
+  white-space:nowrap;
+}
+
+.back-btn:hover{
+  border-color:#9fc4ae;
+  background:var(--green-soft);
+  color:var(--green-dark);
+}
+
+/* =========================
+   Generic section
+========================= */
+
+.section{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  padding:20px;
+  margin-bottom:16px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  font-size:19px;
+  font-weight:700;
+  margin:0 0 15px;
+}
+
+.section-title .icon{
+  font-size:20px;
+}
+
+/* =========================
+   Conditions
+========================= */
+
+.condition-grid{
+  display:grid;
+  grid-template-columns:repeat(6, minmax(0,1fr));
+  border:1px solid var(--border);
+  border-radius:11px;
+  overflow:hidden;
+}
+
+.condition{
+  min-height:126px;
+  padding:15px 12px;
+  text-align:center;
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  gap:4px;
+}
+
+.condition:last-child{
+  border-right:0;
+}
+
+.condition-icon{
+  font-size:25px;
+  line-height:1.1;
+}
+
+.condition-label{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.condition-value{
+  font-weight:700;
+  font-size:17px;
+  color:var(--green-dark);
+}
+
+.condition-desc{
+  color:#8b9690;
+  font-size:11px;
+}
+
+.simulation-meta{
+  text-align:center;
+  color:#8a948e;
+  font-size:12px;
+  margin-top:11px;
+}
+
+/* =========================
+   Loading
+========================= */
+
+.loading{
+  padding:55px 20px;
+  text-align:center;
+}
+
+.spinner{
+  width:44px;
+  height:44px;
+  margin:0 auto 17px;
+  border:4px solid #dcebe2;
+  border-top-color:var(--green);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+  to{ transform:rotate(360deg); }
+}
+
+.loading h2{
+  margin:0 0 6px;
+  font-size:20px;
+}
+
+.loading p{
+  margin:0;
+  color:var(--muted);
+}
+
+/* =========================
+   Main result
+========================= */
+
+.result-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.65fr) minmax(330px,.95fr);
+  gap:16px;
+}
+
+.overall-box{
+  display:grid;
+  grid-template-columns:180px minmax(0,1fr);
+  gap:20px;
+  align-items:center;
+}
+
+.score-circle{
+  width:165px;
+  height:165px;
+  margin:auto;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at center,#fff 61%,transparent 62%),
+    conic-gradient(var(--green) var(--score,82%), #dfeae3 0);
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  box-shadow:inset 0 0 0 1px #d8e6dd;
+}
+
+.score-number{
+  font-size:49px;
+  font-weight:800;
+  line-height:1;
+  color:var(--green-dark);
+}
+
+.score-total{
+  font-size:13px;
+  color:var(--muted);
+  margin-top:5px;
+}
+
+.score-label{
+  text-align:center;
+  margin-top:9px;
+  font-weight:700;
+}
+
+.score-status{
+  display:inline-block;
+  background:var(--green-light);
+  color:var(--green-dark);
+  border-radius:20px;
+  padding:3px 12px;
+  margin-top:5px;
+  font-size:13px;
+}
+
+.metric-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:11px;
+}
+
+.metric{
+  border:1px solid var(--border);
+  border-radius:11px;
+  padding:15px;
+  background:#fff;
+}
+
+.metric-top{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-weight:700;
+  font-size:15px;
+}
+
+.metric-icon{
+  font-size:19px;
+}
+
+.metric-desc{
+  color:var(--muted);
+  font-size:11px;
+  margin:4px 0 10px;
+  min-height:34px;
+}
+
+.progress{
+  height:8px;
+  border-radius:99px;
+  background:#e5ece8;
+  overflow:hidden;
+}
+
+.progress-fill{
+  width:0;
+  height:100%;
+  border-radius:99px;
+  background:var(--green);
+  transition:width .7s ease;
+}
+
+.metric-score{
+  text-align:right;
+  font-size:13px;
+  font-weight:700;
+  margin-top:5px;
+  color:var(--green-dark);
+}
+
+/* =========================
+   AI analysis
+========================= */
+
+.analysis-item{
+  display:grid;
+  grid-template-columns:30px 1fr;
+  gap:10px;
+  padding:10px 0;
+  border-bottom:1px solid #edf1ee;
+}
+
+.analysis-item:last-child{
+  border-bottom:0;
+}
+
+.analysis-icon{
+  font-size:21px;
+  text-align:center;
+}
+
+.analysis-title{
+  font-weight:700;
+  margin-bottom:2px;
+}
+
+.analysis-text{
+  color:#5d6b64;
+  font-size:14px;
+  white-space:pre-line;
+}
+
+/* =========================
+   Recommendation / risks
+========================= */
+
+.bottom-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);
+  gap:16px;
+}
+
+.recommendation{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  padding:12px;
+  border:1px solid var(--border);
+  background:var(--green-soft);
+  border-radius:10px;
+  margin-bottom:9px;
+}
+
+.recommendation:last-child{
+  margin-bottom:0;
+}
+
+.rec-icon{
+  font-size:22px;
+  flex:none;
+}
+
+.rec-title{
+  font-weight:700;
+  font-size:14px;
+}
+
+.rec-text{
+  color:#5f6d65;
+  font-size:13px;
+}
+
+.risk{
+  display:grid;
+  grid-template-columns:34px 1fr;
+  gap:10px;
+  align-items:start;
+  padding:11px 12px;
+  background:var(--warning-bg);
+  border:1px solid #f1dfba;
+  border-radius:10px;
+  margin-bottom:9px;
+}
+
+.risk:last-child{
+  margin-bottom:0;
+}
+
+.risk-icon{
+  font-size:21px;
+}
+
+.risk-title{
+  color:#a66a12;
+  font-weight:700;
+  font-size:14px;
+}
+
+.risk-text{
+  color:#776c59;
+  font-size:13px;
+}
+
+/* =========================
+   Conclusion
+========================= */
+
+.conclusion{
+  display:grid;
+  grid-template-columns:190px minmax(0,1fr) 190px;
+  gap:18px;
+  align-items:center;
+}
+
+.conclusion-status{
+  border-right:1px solid var(--border);
+  padding-right:18px;
+}
+
+.conclusion-status small{
+  display:block;
+  color:var(--muted);
+  margin-bottom:4px;
+}
+
+.status-badge{
+  display:inline-block;
+  font-size:21px;
+  font-weight:800;
+  color:var(--green-dark);
+  background:var(--green-light);
+  border-radius:30px;
+  padding:7px 18px;
+}
+
+.conclusion-text{
+  color:#56645d;
+  font-size:14px;
+}
+
+.confidence{
+  border-left:1px solid var(--border);
+  padding-left:18px;
+  text-align:center;
+}
+
+.confidence-label{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.stars{
+  color:var(--green);
+  font-size:20px;
+  letter-spacing:2px;
+  white-space:nowrap;
+}
+
+.confidence-value{
+  color:#65736b;
+  font-size:13px;
+}
+
+/* =========================
+   Error
+========================= */
+
+.error-box{
+  display:none;
+  padding:28px;
+  text-align:center;
+}
+
+.error-icon{
+  font-size:40px;
+  margin-bottom:8px;
+}
+
+.error-box h2{
+  margin:0 0 7px;
+}
+
+.error-box p{
+  color:var(--muted);
+  max-width:650px;
+  margin:0 auto 18px;
+  white-space:pre-line;
+}
+
+.retry-btn{
+  border:0;
+  background:var(--green);
+  color:#fff;
+  padding:10px 20px;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+.retry-btn:hover{
+  background:var(--green-dark);
+}
+
+/* =========================
+   Footer
+========================= */
+
+.disclaimer{
+  color:#8a948e;
+  font-size:11px;
+  text-align:center;
+  padding:4px 10px 0;
+}
+
+.hidden{
+  display:none !important;
+}
+
+/* =========================
+   Responsive
+========================= */
+
+@media(max-width:1100px){
+  .condition-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .condition:nth-child(3){
+    border-right:0;
+  }
+
+  .condition:nth-child(-n+3){
+    border-bottom:1px solid var(--border);
+  }
+
+  .result-layout{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:800px){
+  .overall-box{
+    grid-template-columns:1fr;
+  }
+
+  .metric-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+
+  .bottom-grid{
+    grid-template-columns:1fr;
+  }
+
+  .conclusion{
+    grid-template-columns:1fr;
+    text-align:center;
+  }
+
+  .conclusion-status{
+    border-right:0;
+    border-bottom:1px solid var(--border);
+    padding:0 0 15px;
+  }
+
+  .confidence{
+    border-left:0;
+    border-top:1px solid var(--border);
+    padding:15px 0 0;
+  }
+}
+
+@media(max-width:600px){
+  .container{
+    width:min(100% - 18px,1380px);
+    padding-top:9px;
+  }
+
+  .header{
+    padding:15px;
+  }
+
+  .brand h1{
+    font-size:20px;
+  }
+
+  .brand p{
+    font-size:12px;
+  }
+
+  .logo{
+    width:42px;
+    height:42px;
+    font-size:24px;
+  }
+
+  .back-btn{
+    padding:8px 11px;
+    font-size:13px;
+  }
+
+  .section{
+    padding:15px;
+  }
+
+  .condition-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .condition{
+    min-height:112px;
+  }
+
+  .condition:nth-child(odd){
+    border-right:1px solid var(--border);
+  }
+
+  .condition:nth-child(even){
+    border-right:0;
+  }
+
+  .condition:nth-child(-n+4){
+    border-bottom:1px solid var(--border);
+  }
+
+  .condition:nth-child(5),
+  .condition:nth-child(6){
+    border-bottom:0;
+  }
+
+  .metric-grid{
+    grid-template-columns:1fr;
+  }
+
+  .metric-desc{
+    min-height:auto;
+  }
+
+  .score-circle{
+    width:145px;
+    height:145px;
+  }
+
+  .score-number{
+    font-size:42px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header class="header">
+    <div class="brand">
+      <div class="logo">⚗️</div>
+      <div>
+        <h1>農作物煉金術</h1>
+        <p>AI 農業模擬結果</p>
+      </div>
+    </div>
+
+    <button class="back-btn" id="backBtn">
+      ← 重新模擬
+    </button>
+  </header>
+
+  <!-- Conditions -->
+  <section class="section">
+    <h2 class="section-title">
+      <span class="icon">🌱</span>
+      本次模擬條件
+    </h2>
+
+    <div class="condition-grid">
+
+      <div class="condition">
+        <div class="condition-icon">🏔️</div>
+        <div class="condition-label">土壤</div>
+        <div class="condition-value" id="soilValue">—</div>
+        <div class="condition-desc">土壤環境</div>
+      </div>
+
+      <div class="condition">
+        <div class="condition-icon">🍅</div>
+        <div class="condition-label">農作物</div>
+        <div class="condition-value" id="cropValue">—</div>
+        <div class="condition-desc">栽培作物</div>
+      </div>
+
+      <div class="condition">
+        <div class="condition-icon">☀️</div>
+        <div class="condition-label">光照</div>
+        <div class="condition-value" id="lightValue">—</div>
+        <div class="condition-desc">光照來源</div>
+      </div>
+
+      <div class="condition">
+        <div class="condition-icon">💧</div>
+        <div class="condition-label">水質</div>
+        <div class="condition-value" id="waterValue">—</div>
+        <div class="condition-desc">灌溉水源</div>
+      </div>
+
+      <div class="condition">
+        <div class="condition-icon">🌿</div>
+        <div class="condition-label">肥料</div>
+        <div class="condition-value" id="fertilizerValue">—</div>
+        <div class="condition-desc">肥料種類</div>
+      </div>
+
+      <div class="condition">
+        <div class="condition-icon">🪴</div>
+        <div class="condition-label">施肥量</div>
+        <div class="condition-value" id="fertilizerAmountValue">—</div>
+        <div class="condition-desc">施肥程度</div>
+      </div>
+
+    </div>
+
+    <div class="simulation-meta">
+      模擬時間：<span id="simulationTime">—</span>
+     　|　模擬編號：<span id="simulationId">—</span>
+    </div>
+  </section>
+
+  <!-- Loading -->
+  <section class="section" id="loadingBox">
+    <div class="loading">
+      <div class="spinner"></div>
+      <h2>AI 正在分析這組農業條件…</h2>
+      <p>正在綜合土壤、作物、光照、水質與施肥條件。</p>
+    </div>
+  </section>
+
+  <!-- Error -->
+  <section class="section error-box" id="errorBox">
+    <div class="error-icon">⚠️</div>
+    <h2>AI 分析暫時無法完成</h2>
+    <p id="errorMessage">目前無法連接分析服務。</p>
+    <button class="retry-btn" id="retryBtn">重新分析</button>
+  </section>
+
+  <!-- Result -->
+  <div id="resultContent" class="hidden">
+
+    <!-- Main result -->
+    <div class="result-layout">
+
+      <section class="section">
+        <h2 class="section-title">
+          <span class="icon">✨</span>
+          AI 預期結果總覽
+        </h2>
+
+        <div class="overall-box">
+
+          <div>
+            <div class="score-circle" id="scoreCircle">
+              <div class="score-number" id="overallScore">—</div>
+              <div class="score-total">/ 100</div>
+            </div>
+            <div class="score-label">整體適合度</div>
+            <div style="text-align:center">
+              <span class="score-status" id="overallStatus">分析中</span>
+            </div>
+          </div>
+
+          <div class="metric-grid">
+
+            <div class="metric">
+              <div class="metric-top">
+                <span class="metric-icon">🌱</span>
+                生長速度
+              </div>
+              <div class="metric-desc">作物生長的預期速度</div>
+              <div class="progress">
+                <div class="progress-fill" id="growthBar"></div>
+              </div>
+              <div class="metric-score"><span id="growthScore">—</span> / 100</div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-top">
+                <span class="metric-icon">🛡️</span>
+                健康程度
+              </div>
+              <div class="metric-desc">作物整體健康與抗逆性</div>
+              <div class="progress">
+                <div class="progress-fill" id="healthBar"></div>
+              </div>
+              <div class="metric-score"><span id="healthScore">—</span> / 100</div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-top">
+                <span class="metric-icon">💧</span>
+                水分適合度
+              </div>
+              <div class="metric-desc">水質與水分供應的適合度</div>
+              <div class="progress">
+                <div class="progress-fill" id="waterBar"></div>
+              </div>
+              <div class="metric-score"><span id="waterScore">—</span> / 100</div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-top">
+                <span class="metric-icon">⚗️</span>
+                養分適合度
+              </div>
+              <div class="metric-desc">土壤養分與施肥的平衡度</div>
+              <div class="progress">
+                <div class="progress-fill" id="nutrientBar"></div>
+              </div>
+              <div class="metric-score"><span id="nutrientScore">—</span> / 100</div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-top">
+                <span class="metric-icon">☀️</span>
+                光照適合度
+              </div>
+              <div class="metric-desc">光照條件的適合程度</div>
+              <div class="progress">
+                <div class="progress-fill" id="lightBar"></div>
+              </div>
+              <div class="metric-score"><span id="lightScore">—</span> / 100</div>
+            </div>
+
+            <div class="metric">
+              <div class="metric-top">
+                <span class="metric-icon">🌾</span>
+                預估產量
+              </div>
+              <div class="metric-desc">相對產量表現預估</div>
+              <div class="progress">
+                <div class="progress-fill" id="yieldBar"></div>
+              </div>
+              <div class="metric-score"><span id="yieldScore">—</span> / 100</div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="recommendation" style="margin-top:15px">
+          <div class="rec-icon">🌿</div>
+          <div>
+            <div class="rec-title">整體評估</div>
+            <div class="rec-text" id="overallAnalysis">—</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- AI analysis -->
+      <section class="section">
+        <h2 class="section-title">
+          <span class="icon">🧠</span>
+          AI 分析摘要
+        </h2>
+
+        <div class="analysis-item">
+          <div class="analysis-icon">🌱</div>
+          <div>
+            <div class="analysis-title">整體分析</div>
+            <div class="analysis-text" id="analysis">—</div>
+          </div>
+        </div>
+
+        <div class="analysis-item">
+          <div class="analysis-icon">🏔️</div>
+          <div>
+            <div class="analysis-title">土壤分析</div>
+            <div class="analysis-text" id="soilAnalysis">—</div>
+          </div>
+        </div>
+
+        <div class="analysis-item">
+          <div class="analysis-icon">💧</div>
+          <div>
+            <div class="analysis-title">水質分析</div>
+            <div class="analysis-text" id="waterAnalysis">—</div>
+          </div>
+        </div>
+
+        <div class="analysis-item">
+          <div class="analysis-icon">☀️</div>
+          <div>
+            <div class="analysis-title">光照分析</div>
+            <div class="analysis-text" id="lightAnalysis">—</div>
+          </div>
+        </div>
+
+        <div class="analysis-item">
+          <div class="analysis-icon">🌿</div>
+          <div>
+            <div class="analysis-title">肥料分析</div>
+            <div class="analysis-text" id="fertilizerAnalysis">—</div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Recommendations + Risks -->
+    <div class="bottom-grid">
+
+      <section class="section">
+        <h2 class="section-title">
+          <span class="icon">👍</span>
+          AI 建議與優化方向
+        </h2>
+
+        <div id="recommendationList"></div>
+      </section>
+
+      <section class="section">
+        <h2 class="section-title">
+          <span class="icon">⚠️</span>
+          潛在風險與限制
+        </h2>
+
+        <div id="riskList"></div>
+      </section>
+
+    </div>
+
+    <!-- Conclusion -->
+    <section class="section">
+      <div class="conclusion">
+
+        <div class="conclusion-status">
+          <small>AI 最終結論</small>
+          <div class="status-badge" id="finalStatus">—</div>
+        </div>
+
+        <div class="conclusion-text" id="recommendation">
+          —
+        </div>
+
+        <div class="confidence">
+          <div class="confidence-label">AI 信心度</div>
+          <div class="stars" id="confidenceStars">☆☆☆☆☆</div>
+          <div class="confidence-value" id="confidenceValue">—</div>
+        </div>
+
+      </div>
+    </section>
+
+    <div class="disclaimer">
+      ※ 本頁結果為 AI 根據輸入條件所做的模擬估算，不代表實際農業試驗結果。
+      實際生長仍會受到品種、溫度、濕度、病蟲害、土壤成分及栽培管理等因素影響。
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+"use strict";
+
+/*
+  ============================================================
+  農作物煉金術｜result.html
+  ============================================================
+
+  index.html
+      ↓
+  localStorage: agriSimulationState
+      ↓
+  result.html
+      ↓
+  POST /api/analyze
+      ↓
+  Cloudflare Worker
+      ↓
+  OpenAI API
+      ↓
+  回傳固定 JSON
+      ↓
+  本頁渲染結果
+
+  注意：
+  不要把 OpenAI API Key 放在這個 HTML 裡。
+  API Key 應該只放在 Cloudflare Worker Secret。
+*/
+
+const API_ENDPOINT = "/api/analyze";
+
+let currentState = null;
+
+/* =========================
+   工具
+========================= */
+
+function safeText(value, fallback = "—"){
+  if(value === null || value === undefined || value === ""){
+    return fallback;
+  }
+  return String(value);
+}
+
+function clampScore(value, fallback = 0){
+  const n = Number(value);
+  if(!Number.isFinite(n)){
+    return fallback;
+  }
+  return Math.max(0, Math.min(100, Math.round(n)));
+}
+
+function escapeHtml(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function setScore(id, barId, value){
+  const score = clampScore(value);
+
+  document.getElementById(id).textContent = score;
+  document.getElementById(barId).style.width = score + "%";
+}
+
+function generateSimulationId(){
+  const now = new Date();
+  const date =
+    now.getFullYear().toString() +
+    String(now.getMonth()+1).padStart(2,"0") +
+    String(now.getDate()).padStart(2,"0");
+
+  const random = Math.floor(1000 + Math.random() * 9000);
+
+  return "ALCH-" + date + "-" + random;
+}
+
+function formatDate(){
+  return new Date().toLocaleString("zh-TW",{
+    year:"numeric",
+    month:"2-digit",
+    day:"2-digit",
+    hour:"2-digit",
+    minute:"2-digit"
+  });
+}
+
+/* =========================
+   讀取 index.html 的狀態
+========================= */
+
+function loadState(){
+
+  const raw = localStorage.getItem("agriSimulationState");
+
+  if(!raw){
+    throw new Error(
+      "找不到本次模擬條件。請先回到設定頁選擇土壤、作物、光照、水質與肥料，再按下 RUN。"
+    );
+  }
+
+  try{
+    currentState = JSON.parse(raw);
+  }catch(error){
+    throw new Error("模擬條件資料格式錯誤，請重新模擬。");
+  }
+
+  if(!currentState || typeof currentState !== "object"){
+    throw new Error("模擬條件不存在，請重新模擬。");
+  }
+
+  renderConditions();
+}
+
+/* =========================
+   顯示模擬條件
+========================= */
+
+function renderConditions(){
+
+  document.getElementById("soilValue").textContent =
+    safeText(currentState.soil);
+
+  document.getElementById("cropValue").textContent =
+    safeText(currentState.crop);
+
+  document.getElementById("lightValue").textContent =
+    safeText(currentState.light);
+
+  document.getElementById("waterValue").textContent =
+    safeText(currentState.water);
+
+  document.getElementById("fertilizerValue").textContent =
+    safeText(currentState.fertilizer);
+
+  document.getElementById("fertilizerAmountValue").textContent =
+    safeText(currentState.fertilizerAmount);
+
+  document.getElementById("simulationTime").textContent =
+    formatDate();
+
+  document.getElementById("simulationId").textContent =
+    generateSimulationId();
+}
+
+/* =========================
+   UI 狀態
+========================= */
+
+function showLoading(){
+
+  document.getElementById("loadingBox").style.display = "block";
+  document.getElementById("errorBox").style.display = "none";
+  document.getElementById("resultContent").classList.add("hidden");
+}
+
+function showError(message){
+
+  document.getElementById("loadingBox").style.display = "none";
+  document.getElementById("errorBox").style.display = "block";
+  document.getElementById("resultContent").classList.add("hidden");
+
+  document.getElementById("errorMessage").textContent =
+    safeText(message,"AI 分析服務暫時無法使用。");
+}
+
+function showResult(){
+
+  document.getElementById("loadingBox").style.display = "none";
+  document.getElementById("errorBox").style.display = "none";
+  document.getElementById("resultContent").classList.remove("hidden");
+}
+
+/* =========================
+   呼叫 Cloudflare Worker
+========================= */
+
+async function analyze(){
+
+  showLoading();
+
+  try{
+
+    /*
+      傳給 Worker 的資料保持簡單。
+      未來可以在這裡加入你的農業資料庫：
+      soilData、cropData、lightData、waterData 等。
+    */
+
+    const payload = {
+      state: currentState
+    };
+
+    const response = await fetch(API_ENDPOINT,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify(payload)
+    });
+
+    let data = null;
+
+    try{
+      data = await response.json();
+    }catch(error){
+      throw new Error("AI 服務回傳的資料不是有效 JSON。");
+    }
+
+    if(!response.ok){
+
+      throw new Error(
+        data && data.error
+          ? data.error
+          : "AI 分析服務發生錯誤，HTTP " + response.status
+      );
+    }
+
+    if(!data || typeof data !== "object"){
+      throw new Error("AI 回傳內容格式錯誤。");
+    }
+
+    renderResult(data);
+
+  }catch(error){
+
+    console.error("AI analysis error:",error);
+
+    showError(
+      error && error.message
+        ? error.message
+        : "無法連接 AI 分析服務。"
+    );
+  }
+}
+
+/* =========================
+   渲染 AI 結果
+========================= */
+
+function renderResult(data){
+
+  const overall = clampScore(data.overall_score);
+  const growth = clampScore(data.growth_score);
+  const health = clampScore(data.health_score);
+  const water = clampScore(data.water_score);
+  const nutrient = clampScore(data.nutrient_score);
+  const light = clampScore(data.light_score);
+  const yieldScore = clampScore(
+    data.yield_score ?? data.yield_potential_score
+  );
+
+  /* Overall */
+
+  document.getElementById("overallScore").textContent = overall;
+  document.getElementById("scoreCircle").style.setProperty(
+    "--score",
+    overall + "%"
+  );
+
+  document.getElementById("overallStatus").textContent =
+    safeText(data.growth_level, getStatus(overall));
+
+  /* Metrics */
+
+  setScore("growthScore","growthBar",growth);
+  setScore("healthScore","healthBar",health);
+  setScore("waterScore","waterBar",water);
+  setScore("nutrientScore","nutrientBar",nutrient);
+  setScore("lightScore","lightBar",light);
+  setScore("yieldScore","yieldBar",yieldScore);
+
+  /* Text */
+
+  document.getElementById("overallAnalysis").textContent =
+    safeText(data.overall_analysis ?? data.analysis);
+
+  document.getElementById("analysis").textContent =
+    safeText(data.analysis);
+
+  document.getElementById("soilAnalysis").textContent =
+    safeText(data.soil_analysis);
+
+  document.getElementById("waterAnalysis").textContent =
+    safeText(data.water_analysis);
+
+  document.getElementById("lightAnalysis").textContent =
+    safeText(data.light_analysis);
+
+  document.getElementById("fertilizerAnalysis").textContent =
+    safeText(data.fertilizer_analysis);
+
+  /* Recommendations */
+
+  renderList(
+    "recommendationList",
+    data.recommendations ?? data.optimization ?? [],
+    "recommendation"
+  );
+
+  /* Risks */
+
+  renderList(
+    "riskList",
+    data.risks ?? [],
+    "risk"
+  );
+
+  /* Final conclusion */
+
+  document.getElementById("finalStatus").textContent =
+    safeText(data.final_status ?? getStatus(overall));
+
+  document.getElementById("recommendation").textContent =
+    safeText(data.recommendation);
+
+  renderConfidence(
+    data.confidence
+  );
+
+  showResult();
+}
+
+/* =========================
+   狀態文字
+========================= */
+
+function getStatus(score){
+
+  if(score >= 85){
+    return "非常適合";
+  }
+
+  if(score >= 70){
+    return "適合栽培";
+  }
+
+  if(score >= 55){
+    return "普通";
+  }
+
+  if(score >= 40){
+    return "需要調整";
+  }
+
+  return "不適合";
+}
+
+/* =========================
+   清單
+========================= */
+
+function renderList(containerId, items, type){
+
+  const container = document.getElementById(containerId);
+
+  if(!Array.isArray(items) || items.length === 0){
+
+    container.innerHTML =
+      `<div class="${type === "risk" ? "risk" : "recommendation"}">
+        <div class="${type === "risk" ? "risk-icon" : "rec-icon"}">
+          ${type === "risk" ? "ℹ️" : "✓"}
+        </div>
+        <div>
+          <div class="${type === "risk" ? "risk-title" : "rec-title"}">
+            ${type === "risk" ? "目前沒有額外風險" : "目前沒有額外建議"}
+          </div>
+          <div class="${type === "risk" ? "risk-text" : "rec-text"}">
+            AI 沒有提供其他項目。
+          </div>
+        </div>
+      </div>`;
+
+    return;
+  }
+
+  container.innerHTML = items.map((item,index)=>{
+
+    let title = "";
+    let text = "";
+
+    if(typeof item === "string"){
+      title = type === "risk"
+        ? "注意事項 " + (index + 1)
+        : "建議 " + (index + 1);
+
+      text = item;
+    }else{
+
+      title = item.title ??
+        (type === "risk"
+          ? "注意事項 " + (index + 1)
+          : "建議 " + (index + 1));
+
+      text = item.text ??
+        item.description ??
+        item.detail ??
+        "";
+    }
+
+    if(type === "risk"){
+
+      return `
+        <div class="risk">
+          <div class="risk-icon">⚠️</div>
+          <div>
+            <div class="risk-title">${escapeHtml(title)}</div>
+            <div class="risk-text">${escapeHtml(text)}</div>
+          </div>
+        </div>
+      `;
+
+    }
+
+    return `
+      <div class="recommendation">
+        <div class="rec-icon">🌿</div>
+        <div>
+          <div class="rec-title">${escapeHtml(title)}</div>
+          <div class="rec-text">${escapeHtml(text)}</div>
+        </div>
+      </div>
+    `;
+
+  }).join("");
+}
+
+/* =========================
+   信心度
+========================= */
+
+function renderConfidence(value){
+
+  let confidence = Number(value);
+
+  if(!Number.isFinite(confidence)){
+    confidence = 0;
+  }
+
+  /*
+    支援：
+    0~1
+    0~5
+    0~100
+  */
+
+  if(confidence <= 1){
+    confidence *= 5;
+  }else if(confidence > 5){
+    confidence = confidence / 20;
+  }
+
+  confidence = Math.max(0,Math.min(5,confidence));
+
+  const rounded = Math.round(confidence);
+  const stars =
+    "★".repeat(rounded) +
+    "☆".repeat(5-rounded);
+
+  document.getElementById("confidenceStars").textContent = stars;
+
+  document.getElementById("confidenceValue").textContent =
+    confidence.toFixed(1) + " / 5";
+}
+
+/* =========================
+   回到上一頁 / 重新模擬
+========================= */
+
+function backToSimulation(){
+
+  /*
+    不刪除 agriSimulationState。
+    這樣如果之後 index.html 想要保留上次選擇，
+    可以直接讀取這份資料。
+
+    如果希望「重新模擬」時全部回到預設值，
+    可以在 index.html 裡自行重設 state。
+  */
+
+  window.location.href = "index.html";
+}
+
+document.getElementById("backBtn")
+  .addEventListener("click",backToSimulation);
+
+document.getElementById("retryBtn")
+  .addEventListener("click",analyze);
+
+/* =========================
+   啟動
+========================= */
+
+window.addEventListener("DOMContentLoaded",()=>{
+
+  try{
+    loadState();
+    analyze();
+  }catch(error){
+
+    console.error(error);
+
+    showError(
+      error && error.message
+        ? error.message
+        : "找不到模擬資料，請重新模擬。"
+    );
+  }
+
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>農作物煉金術｜Agricultural Alchemy</title>
+<style>
+:root{
+  --bg:#f4f6f3;
+  --panel:#fff;
+  --line:#dfe5df;
+  --text:#243029;
+  --muted:#718078;
+  --accent:#47745b;
+  --accent-dark:#31563f;
+  --gold:#b28a45;
+  --water:#4b83a6;
+  --shadow:0 10px 30px rgba(35,55,43,.08);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:"Noto Sans TC","Microsoft JhengHei",Arial,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 10% 0%,rgba(88,125,98,.10),transparent 30%),
+    radial-gradient(circle at 90% 10%,rgba(178,138,69,.08),transparent 25%),
+    var(--bg);
+}
+header{text-align:center;padding:34px 20px 24px}
+.logo{
+  display:inline-flex;align-items:center;gap:10px;
+  color:var(--accent-dark);font-size:13px;letter-spacing:2px;font-weight:700
+}
+.logo-mark{
+  width:30px;height:30px;border:1.5px solid var(--gold);
+  border-radius:50%;display:grid;place-items:center
+}
+h1{margin:8px 0 0;font-size:32px;letter-spacing:2px}
+.subtitle{margin:9px 0 0;color:var(--muted);font-size:14px}
+main{width:min(1200px,94%);margin:auto}
+.lab{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px
+}
+.panel{
+  background:rgba(255,255,255,.95);
+  border:1px solid var(--line);border-radius:18px;
+  box-shadow:var(--shadow);padding:22px
+}
+.panel-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:18px
+}
+.panel-title{font-size:19px;font-weight:900}
+.panel-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.badge{
+  font-size:10px;padding:5px 9px;border-radius:999px;
+  background:#eef4ef;color:var(--accent-dark)
+}
+.select-wrap{position:relative}
+.select-wrap label{
+  display:block;font-size:13px;font-weight:800;
+  margin-bottom:8px;color:#52645a
+}
+select{
+  width:100%;
+  appearance:none;
+  -webkit-appearance:none;
+  border:1px solid #cfd9d1;
+  border-radius:12px;
+  padding:14px 42px 14px 14px;
+  background:#fafcf9;
+  color:var(--text);
+  font-family:inherit;
+  font-size:15px;
+  font-weight:700;
+  cursor:pointer;
+  outline:none;
+}
+select:hover{border-color:#9eb4a4}
+select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(71,116,91,.10)
+}
+.select-arrow{
+  position:absolute;right:15px;bottom:15px;
+  pointer-events:none;color:var(--accent-dark);font-size:14px
+}
+.preview{
+  margin-top:15px;
+  border:1px solid var(--line);
+  border-radius:13px;
+  overflow:hidden;
+  background:#fafcf9
+}
+.preview img{
+  width:100%;height:190px;object-fit:cover;display:block;
+  background:#e7ece7
+}
+.preview-info{padding:12px}
+.preview-name{font-weight:900;font-size:15px}
+.preview-desc{
+  margin-top:8px;font-size:12px;color:var(--muted);line-height:1.8
+}
+.crop-info-box{
+  min-height:190px;
+  display:flex;
+  align-items:center;
+}
+.crop-info-box .preview-info{
+  width:100%;
+}
+.crop-info-box .preview-name{
+  font-size:18px;
+  margin-bottom:12px;
+}
+.crop-economic{
+  margin-top:9px;
+  padding-top:9px;
+  border-top:1px solid var(--line);
+}
+.soil-description{
+  margin-top:15px;
+  padding:15px 16px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fafcf9;
+  color:#56645c;
+  font-size:13px;
+  line-height:1.7;
+}.light-section{margin-top:18px}
+.light-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.light-option{
+  border:1px solid var(--line);border-radius:12px;
+  padding:13px;text-align:center;cursor:pointer;background:#fff
+}
+.light-option.selected{
+  border:2px solid var(--gold);background:#fffaf0
+}
+.light-symbol{font-size:25px}
+.light-name{font-weight:900;font-size:13px;margin-top:4px}
+.light-desc{font-size:10px;color:var(--muted);margin-top:3px}
+.wide-panel{
+  grid-column:span 2;
+}
+.fert-content{
+  display:grid;
+  grid-template-columns:minmax(180px,1fr) 1.45fr;
+  gap:18px;
+  align-items:center;
+}
+.fert-note{
+  padding:14px 16px;
+  border:1px solid #dce8df;
+  border-radius:12px;
+  background:#f7fbf7;
+  color:#56645c;
+  font-size:12px;
+  line-height:1.7;
+}
+.water-note{
+  margin-top:15px;padding:12px;border-radius:12px;
+  background:#f2f8fb;border:1px solid #dbeaf0;
+  color:#5e727c;font-size:11px;line-height:1.7
+}
+.run-area{
+  margin:18px 0 40px;padding:18px;
+  background:linear-gradient(135deg,#fff,#f1f6f1);
+  border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)
+}
+.selection-summary{
+  display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px
+}
+.chip{
+  border:1px solid var(--line);background:#fff;
+  border-radius:999px;padding:7px 11px;font-size:12px
+}
+.run-button{
+  width:100%;border:0;border-radius:13px;padding:17px;
+  color:#fff;background:linear-gradient(135deg,var(--accent-dark),var(--accent));
+  font-size:17px;font-weight:900;letter-spacing:2px;cursor:pointer;
+  box-shadow:0 8px 20px rgba(49,86,63,.22);transition:.18s
+}
+.run-button:hover{transform:translateY(-2px)}
+.result{
+  display:none;margin-top:15px;border:1px solid #dce7df;
+  border-radius:13px;padding:16px;background:#fbfdfb
+}
+.result.show{display:block}
+.result-title{font-weight:900;margin-bottom:8px}
+.result-text{color:#56645c;line-height:1.7;font-size:13px}
+@media(max-width:1050px){
+  .lab{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .wide-panel{grid-column:span 2}
+}
+@media(max-width:650px){
+  .lab{grid-template-columns:1fr}
+  .wide-panel{grid-column:span 1}
+  .fert-content{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+<header>
+  <div class="logo"><div class="logo-mark">✦</div>AGRICULTURAL ALCHEMY</div>
+  <h1>農作物煉金術</h1>
+  <p class="subtitle">土壤 × 作物 × 水質 × 光照 × 肥料　探索植物生長的最佳組合</p>
+</header>
+
+<main>
+<section class="lab">
+
+  <!-- 土壤 -->
+  <div class="panel">
+    <div class="panel-head">
+      <div><div class="panel-title">① 土壤</div><div class="panel-sub">選擇植物生長的基礎介質</div></div>
+      <span class="badge">SOIL</span>
+    </div>
+
+    <div class="select-wrap">
+      <label for="soilSelect">土壤種類</label>
+      <select id="soilSelect" onchange="changeSoil()">
+        <option>火山土</option>
+        <option>沖積土</option>
+        <option>沙漠土</option>
+        <option>海岸土</option>
+        <option>森林土</option>
+        <option>冰川沉積土</option>
+        <option>石灰質土</option>
+        <option>紅土</option>
+        <option>黑土</option>
+        <option>泥炭土</option>
+        <option>人工改良土</option>
+      </select>
+      <span class="select-arrow">▼</span>
+    </div>
+
+    <div class="soil-description" id="soilDesc">火山岩風化形成的土壤。</div>
+  </div>
+
+  <!-- 農作物 -->
+  <div class="panel">
+    <div class="panel-head">
+      <div><div class="panel-title">② 農作物</div><div class="panel-sub">營養價值與經濟價值</div></div>
+      <span class="badge">CROP</span>
+    </div>
+
+    <div class="select-wrap">
+      <label for="cropSelect">作物種類</label>
+      <select id="cropSelect" onchange="changeCrop()">
+        <optgroup label="葉菜類">
+          <option>生菜</option>
+          <option>小白菜</option>
+          <option>高麗菜</option>
+          <option>菠菜</option>
+          <option>空心菜</option>
+          <option>芥藍</option>
+          <option>青江菜</option>
+          <option>芥菜</option>
+          <option>莧菜</option>
+          <option>羽衣甘藍</option>
+          <option>韭菜</option>
+        </optgroup>
+        <optgroup label="果菜類">
+          <option>番茄</option>
+          <option>辣椒</option>
+          <option>甜椒</option>
+          <option>小黃瓜</option>
+          <option>茄子</option>
+          <option>南瓜</option>
+          <option>櫛瓜</option>
+          <option>苦瓜</option>
+          <option>絲瓜</option>
+          <option>冬瓜</option>
+          <option>秋葵</option>
+        </optgroup>
+        <optgroup label="根莖與塊莖類">
+          <option>胡蘿蔔</option>
+          <option>馬鈴薯</option>
+          <option>地瓜</option>
+          <option>山藥</option>
+          <option>蘿蔔</option>
+          <option>甜菜根</option>
+          <option>芋頭</option>
+          <option>洋蔥</option>
+          <option>大蒜</option>
+          <option>薑</option>
+        </optgroup>
+        <optgroup label="豆類">
+          <option>毛豆</option>
+          <option>黃豆</option>
+          <option>綠豆</option>
+          <option>紅豆</option>
+          <option>豌豆</option>
+          <option>四季豆</option>
+          <option>花生</option>
+        </optgroup>
+        <optgroup label="穀物">
+          <option>水稻</option>
+          <option>玉米</option>
+          <option>小麥</option>
+          <option>大麥</option>
+          <option>燕麥</option>
+          <option>高粱</option>
+          <option>小米</option>
+        </optgroup>
+        <optgroup label="水果">
+          <option>草莓</option>
+          <option>蘋果</option>
+          <option>葡萄</option>
+          <option>香蕉</option>
+          <option>橘子</option>
+          <option>柳橙</option>
+          <option>檸檬</option>
+          <option>柚子</option>
+          <option>鳳梨</option>
+          <option>芒果</option>
+          <option>木瓜</option>
+          <option>西瓜</option>
+          <option>哈密瓜</option>
+          <option>奇異果</option>
+          <option>桃子</option>
+          <option>水蜜桃</option>
+          <option>李子</option>
+          <option>梨子</option>
+          <option>櫻桃</option>
+          <option>柿子</option>
+          <option>石榴</option>
+          <option>百香果</option>
+          <option>火龍果</option>
+          <option>荔枝</option>
+          <option>龍眼</option>
+          <option>榴槤</option>
+          <option>椰子</option>
+          <option>酪梨</option>
+          <option>無花果</option>
+        </optgroup>
+      </select>
+      <span class="select-arrow">▼</span>
+    </div>
+
+    <div class="preview crop-info-box">
+      <div class="preview-info">
+        <div class="preview-name" id="cropName">番茄</div>
+        <div class="preview-desc">
+          <div><b>基本營養價值：</b><span id="cropNutrition">富含維生素 C、鉀與茄紅素。</span></div>
+          <div class="crop-economic"><b>經濟價值：</b><span id="cropEconomic">常見的重要果菜作物，鮮食與加工市場需求穩定。</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 光照 -->
+  <div class="panel">
+    <div class="panel-head">
+      <div><div class="panel-title">③ 光照</div><div class="panel-sub">植物獲取能量的主要來源</div></div>
+      <span class="badge">LIGHT</span>
+    </div>
+
+    <div class="select-wrap">
+      <label for="lightSelect">光照方式</label>
+      <select id="lightSelect" onchange="changeLight()">
+        <option value="太陽光" selected>太陽光</option>
+        <option value="人造光">人造光</option>
+      </select>
+      <span class="select-arrow">▼</span>
+    </div>
+
+    <div class="soil-description" id="lightDesc">
+      自然太陽光，具有完整的日夜週期與光譜變化。
+    </div>
+
+    <div class="water-note">
+      光照不代表越強越好。未來模型會加入 <b>光照強度、光週期與光飽和</b> 等參數。
+    </div>
+  </div>
+
+  <!-- 水質 -->
+  <div class="panel">
+    <div class="panel-head">
+      <div><div class="panel-title">④ 水質</div><div class="panel-sub">水的潔淨度</div></div>
+      <span class="badge">WATER</span>
+    </div>
+
+    <div class="select-wrap">
+      <label for="waterSelect">水質等級</label>
+      <select id="waterSelect" onchange="changeWater()">
+        <option value="一般水">一般水</option>
+        <option value="乾淨水" selected>乾淨水</option>
+        <option value="高度純化水">高度純化水</option>
+      </select>
+      <span class="select-arrow">▼</span>
+    </div>
+
+    <div class="preview">
+      <div style="height:190px;display:grid;place-items:center;background:linear-gradient(135deg,#e9f5fa,#f7fbfd);font-size:72px" id="waterVisual">💦</div>
+      <div class="preview-info">
+        <div class="preview-name" id="waterName">乾淨水</div>
+        <div class="preview-desc" id="waterDesc">污染物較低，適合作為穩定水源。</div>
+      </div>
+    </div>
+
+    <div class="water-note">
+      水質不只是「越乾淨越好」。<br>
+      未來模型會加入 <b>礦物離子、鹽分、pH</b> 等參數。
+    </div>
+  </div>
+
+  <!-- 肥料 -->
+  <div class="panel wide-panel">
+    <div class="panel-head">
+      <div><div class="panel-title">⑤ 肥料</div><div class="panel-sub">提供作物額外養分</div></div>
+      <span class="badge">FERTILIZER</span>
+    </div>
+
+    <div class="fert-content">
+      <div class="select-wrap">
+        <label for="fertilizerSelect">肥料種類</label>
+        <select id="fertilizerSelect" onchange="changeFertilizer()">
+          <option value="不施肥" selected>不施肥</option>
+          <option value="有機肥">有機肥</option>
+          <option value="氮肥">氮肥</option>
+          <option value="磷肥">磷肥</option>
+          <option value="鉀肥">鉀肥</option>
+          <option value="複合肥">複合肥</option>
+          <option value="鈣肥">鈣肥</option>
+          <option value="鎂肥">鎂肥</option>
+          <option value="微量元素肥">微量元素肥</option>
+        </select>
+        <span class="select-arrow">▼</span>
+      </div>
+      <div class="fert-note">
+        不額外施用肥料時，作物主要依靠土壤與水中的養分。
+        未來模型會依照不同肥料種類與施肥量計算養分補充效果。
+      </div>
+    </div>
+  </div>
+
+  <!-- 施肥量 -->
+  <div class="panel wide-panel">
+    <div class="panel-head">
+      <div><div class="panel-title">⑥ 施肥量</div><div class="panel-sub">設定施肥的用量等級</div></div>
+      <span class="badge">AMOUNT</span>
+    </div>
+
+    <div class="fert-content">
+      <div class="select-wrap">
+        <label for="fertilizerAmountSelect">施肥量</label>
+        <select id="fertilizerAmountSelect" onchange="changeFertilizerAmount()">
+          <option value="無" selected>無</option>
+          <option value="少量">少量</option>
+          <option value="適量">適量</option>
+          <option value="高量">高量</option>
+          <option value="過量">過量</option>
+        </select>
+        <span class="select-arrow">▼</span>
+      </div>
+      <div class="fert-note">
+        施肥量不是越高越好。未來模型會計算缺乏、適量與過量對作物生長的不同影響。
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<section class="run-area">
+  <div class="selection-summary">
+    <span class="chip">土壤：<b id="summarySoil">火山土</b></span>
+    <span class="chip">作物：<b id="summaryCrop">番茄</b></span>
+    <span class="chip">水質：<b id="summaryWater">乾淨水</b></span>
+    <span class="chip">光照：<b id="summaryLight">太陽光</b></span>
+    <span class="chip">肥料：<b id="summaryFertilizer">不施肥</b></span>
+    <span class="chip">施肥量：<b id="summaryFertilizerAmount">無</b></span>
+  </div>
+
+  <button class="run-button" onclick="runSimulation()">⚗ 開始模擬 RUN</button>
+
+  <div class="result" id="result">
+    <div class="result-title">🌱 模擬條件已建立</div>
+    <div class="result-text" id="resultText"></div>
+  </div>
+</section>
+</main>
+
+<script>
+const soilData = {
+  "火山土":"由火山灰與火山岩風化物形成，礦物組成通常較為多樣。",
+  "沖積土":"由河流長期搬運與沉積形成，常具有良好的耕作條件。",
+  "沙漠土":"在乾燥少雨環境形成，通常有機質較低且保水能力有限。",
+  "海岸土":"主要由沿海沉積物形成，砂質比例通常較高、排水較快。",
+  "森林土":"在森林植被與有機物長期累積下形成，常具有較明顯的腐植層。",
+  "冰川沉積土":"由冰川搬運並沉積的岩屑與礦物形成，顆粒組成差異較大。",
+  "石灰質土":"含有較多碳酸鈣或石灰岩物質，土壤化學性質具有明顯特色。",
+  "紅土":"在高溫多雨環境長期風化形成，鐵與鋁氧化物含量通常較高。",
+  "黑土":"富含有機質的深色土壤，通常具有良好的肥力潛力。",
+  "泥炭土":"由大量未完全分解的植物有機物累積形成，有機質含量高。",
+  "人工改良土":"透過人工混合或添加材料調整性質，以符合特定栽培需求。"
+};
+
+const cropData = {
+  "番茄": {nutrition:"富含維生素 C、鉀與茄紅素。",economic:"重要果菜作物，鮮食、加工與餐飲市場需求穩定。"},
+  "生菜": {nutrition:"含維生素 A、維生素 K、葉酸與膳食纖維。",economic:"常見葉菜，沙拉、餐飲與生鮮市場需求穩定。"},
+  "小白菜": {nutrition:"含維生素 C、維生素 K、葉酸與膳食纖維。",economic:"生長期較短，是亞洲常見且需求穩定的葉菜。"},
+  "高麗菜": {nutrition:"含維生素 C、維生素 K、葉酸與膳食纖維。",economic:"重要葉菜，鮮食、餐飲與加工市場均有需求。"},
+  "菠菜": {nutrition:"含葉酸、維生素 K、維生素 A 前驅物、鐵與鎂。",economic:"常見高營養葉菜，鮮食與加工市場皆具需求。"},
+  "空心菜": {nutrition:"含維生素 A、維生素 C、維生素 K與膳食纖維。",economic:"亞洲常見葉菜，生產快速，市場需求普遍。"},
+  "芥藍": {nutrition:"含維生素 C、維生素 K、葉酸與膳食纖維。",economic:"重要亞洲蔬菜，餐飲與生鮮市場需求穩定。"},
+  "青江菜": {nutrition:"含維生素 C、維生素 K、葉酸與鈣。",economic:"常見小型葉菜，適合設施栽培與生鮮供應。"},
+  "芥菜": {nutrition:"含維生素 C、維生素 K、葉酸與膳食纖維。",economic:"可鮮食、醃漬與加工，具有多元市場用途。"},
+  "莧菜": {nutrition:"含維生素 A、維生素 C、葉酸、鈣與鐵。",economic:"耐熱性較佳的葉菜，亞洲地區具有穩定消費市場。"},
+  "羽衣甘藍": {nutrition:"含維生素 K、維生素 C、β-胡蘿蔔素與膳食纖維。",economic:"健康食品與生鮮市場具特色，亦常用於果昔與加工。"},
+  "韭菜": {nutrition:"含維生素 K、維生素 C、葉酸與膳食纖維。",economic:"可多次採收，廣泛用於家庭料理與餐飲市場。"},
+  "辣椒": {nutrition:"富含維生素 C、維生素 A 前驅物與辣椒素。",economic:"兼具鮮食、調味與加工用途，具有穩定市場需求。"},
+  "甜椒": {nutrition:"富含維生素 C、維生素 A 前驅物與抗氧化物質。",economic:"高單價果菜之一，餐飲、生鮮與設施栽培市場重要。"},
+  "小黃瓜": {nutrition:"含水量高，提供維生素 K、維生素 C與少量膳食纖維。",economic:"鮮食、醃漬與餐飲市場皆有需求。"},
+  "茄子": {nutrition:"含膳食纖維、鉀與多種植化素。",economic:"常見果菜，可鮮食、餐飲加工，市場需求穩定。"},
+  "南瓜": {nutrition:"富含β-胡蘿蔔素、鉀、維生素 C與膳食纖維。",economic:"可鮮食、加工與作為食品原料，保存性也較佳。"},
+  "櫛瓜": {nutrition:"含維生素 C、鉀、葉酸與膳食纖維。",economic:"餐飲與高端生鮮市場常見，適合設施栽培。"},
+  "苦瓜": {nutrition:"含維生素 C、葉酸、鉀與膳食纖維。",economic:"亞洲重要特色瓜果，鮮食與加工市場均有需求。"},
+  "絲瓜": {nutrition:"含水分、維生素 C、鉀與膳食纖維。",economic:"常見瓜果蔬菜，家庭與餐飲市場需求穩定。"},
+  "冬瓜": {nutrition:"含水分、鉀與少量維生素 C及膳食纖維。",economic:"重量大、耐儲藏，可供鮮食與加工使用。"},
+  "秋葵": {nutrition:"含膳食纖維、維生素 C、維生素 K與葉酸。",economic:"特色蔬菜，鮮食與健康食品市場具有一定價值。"},
+  "胡蘿蔔": {nutrition:"富含β-胡蘿蔔素、膳食纖維與鉀。",economic:"重要根菜，可鮮食、榨汁與食品加工。"},
+  "馬鈴薯": {nutrition:"富含碳水化合物、鉀與維生素 C。",economic:"全球重要糧食作物，可鮮食並加工成薯條、洋芋片等。"},
+  "地瓜": {nutrition:"提供碳水化合物、膳食纖維、鉀與β-胡蘿蔔素。",economic:"重要根莖作物，可鮮食、烘焙與加工。"},
+  "山藥": {nutrition:"提供碳水化合物、膳食纖維、鉀與維生素 C。",economic:"兼具糧食與藥膳市場，亞洲地區需求穩定。"},
+  "蘿蔔": {nutrition:"含維生素 C、鉀、葉酸與膳食纖維。",economic:"重要根菜，可鮮食、醃漬與加工。"},
+  "甜菜根": {nutrition:"含葉酸、鉀、膳食纖維與甜菜紅素。",economic:"生鮮、果汁與健康食品市場具有特色。"},
+  "芋頭": {nutrition:"富含碳水化合物、膳食纖維與鉀。",economic:"可鮮食並加工成糕點、飲品與食品原料。"},
+  "洋蔥": {nutrition:"含維生素 C、葉酸、鉀與多種含硫化合物。",economic:"全球重要調味蔬菜，生鮮與加工需求量大。"},
+  "大蒜": {nutrition:"含維生素 C、維生素 B6、錳與含硫化合物。",economic:"重要調味作物，鮮食、調味與加工市場需求穩定。"},
+  "薑": {nutrition:"含鉀、鎂與薑辣素等植物化合物。",economic:"重要香辛作物，可鮮食、加工、調味與製成食品原料。"},
+  "毛豆": {nutrition:"富含植物性蛋白質、膳食纖維、葉酸與維生素 K。",economic:"高價值豆類，鮮食、冷凍與食品加工市場需求高。"},
+  "黃豆": {nutrition:"富含植物性蛋白質、不飽和脂肪與鐵。",economic:"重要油料與蛋白質作物，可製豆腐、豆漿與食用油。"},
+  "綠豆": {nutrition:"提供植物性蛋白質、碳水化合物、葉酸與膳食纖維。",economic:"重要豆類，可製豆芽、豆餡、甜品與加工食品。"},
+  "紅豆": {nutrition:"富含植物性蛋白質、膳食纖維、葉酸與鉀。",economic:"亞洲重要食用豆類，甜品、烘焙與加工需求穩定。"},
+  "豌豆": {nutrition:"含植物性蛋白質、膳食纖維、維生素 C與葉酸。",economic:"可鮮食、冷凍或加工，食品產業用途廣。"},
+  "四季豆": {nutrition:"含膳食纖維、維生素 C、維生素 K與葉酸。",economic:"常見豆莢類蔬菜，餐飲與生鮮市場需求穩定。"},
+  "花生": {nutrition:"富含植物性蛋白質、不飽和脂肪、維生素 E與鎂。",economic:"重要油料與食品作物，可製花生油、花生醬與零食。"},
+  "水稻": {nutrition:"主要提供碳水化合物，也是亞洲重要的能量來源。",economic:"全球最重要的糧食作物之一，產業鏈龐大。"},
+  "玉米": {nutrition:"提供碳水化合物、膳食纖維、葉酸與多種維生素。",economic:"重要糧食、飼料與工業原料作物。"},
+  "小麥": {nutrition:"主要提供碳水化合物，也含植物性蛋白質、鐵與膳食纖維。",economic:"全球核心糧食作物，可製麵粉、麵包、麵條等。"},
+  "大麥": {nutrition:"含碳水化合物、膳食纖維、蛋白質與多種礦物質。",economic:"可供糧食、飼料及食品加工等多元用途。"},
+  "燕麥": {nutrition:"富含膳食纖維、β-葡聚糖、蛋白質與鎂。",economic:"健康食品市場重要穀物，可製燕麥片與飲品。"},
+  "高粱": {nutrition:"提供碳水化合物、植物性蛋白質與膳食纖維。",economic:"可作糧食、飼料與釀造原料，具耐旱作物價值。"},
+  "小米": {nutrition:"提供碳水化合物、鎂、磷與植物性蛋白質。",economic:"特色雜糧作物，可供糧食與健康食品市場使用。"},
+  "草莓": {nutrition:"富含維生素 C、葉酸與多種抗氧化物質。",economic:"高經濟價值水果，鮮食、甜點與加工市場需求高。"},
+  "蘋果": {nutrition:"含膳食纖維、維生素 C與多種植化素。",economic:"重要果樹作物，鮮食市場大，也可製成果汁與加工食品。"},
+  "葡萄": {nutrition:"含維生素 C、維生素 K、鉀與多酚類物質。",economic:"可供鮮食、果汁、乾果與多種加工用途。"},
+  "香蕉": {nutrition:"富含碳水化合物、鉀、維生素 B6與膳食纖維。",economic:"全球重要熱帶水果，全年鮮食與加工需求穩定。"},
+  "橘子": {nutrition:"富含維生素 C、葉酸、鉀與膳食纖維。",economic:"重要柑橘類水果，可鮮食並加工成果汁。"},
+  "柳橙": {nutrition:"富含維生素 C、葉酸、鉀與膳食纖維。",economic:"鮮食與果汁產業的重要水果，市場規模大。"},
+  "檸檬": {nutrition:"富含維生素 C、檸檬酸與多種植物化合物。",economic:"廣泛用於飲品、餐飲、調味與食品加工。"},
+  "柚子": {nutrition:"含維生素 C、鉀、葉酸與膳食纖維。",economic:"重要柑橘水果，鮮食與節慶市場具有特色。"},
+  "鳳梨": {nutrition:"富含維生素 C、錳與膳食纖維，也含鳳梨蛋白酶。",economic:"重要熱帶水果，可鮮食、罐藏、果汁與加工。"},
+  "芒果": {nutrition:"富含維生素 C、β-胡蘿蔔素、葉酸與膳食纖維。",economic:"高經濟價值熱帶水果，鮮食、果汁與加工需求高。"},
+  "木瓜": {nutrition:"富含維生素 C、β-胡蘿蔔素、葉酸與膳食纖維。",economic:"重要熱帶水果，也可供食品加工與果汁使用。"},
+  "西瓜": {nutrition:"含大量水分，提供維生素 C、鉀與茄紅素。",economic:"大型季節性水果，夏季鮮食市場需求旺盛。"},
+  "哈密瓜": {nutrition:"含維生素 C、β-胡蘿蔔素、鉀與水分。",economic:"高單價瓜果，鮮食與禮品市場具有經濟價值。"},
+  "奇異果": {nutrition:"富含維生素 C、維生素 K、葉酸與膳食纖維。",economic:"高價值水果，鮮食與進口水果市場需求穩定。"},
+  "桃子": {nutrition:"含維生素 C、維生素 A 前驅物、鉀與膳食纖維。",economic:"重要溫帶水果，鮮食、罐藏與加工市場皆有需求。"},
+  "水蜜桃": {nutrition:"含維生素 C、β-胡蘿蔔素、鉀與膳食纖維。",economic:"高單價特色水果，鮮食與禮品市場經濟價值高。"},
+  "李子": {nutrition:"含維生素 C、維生素 K、鉀與膳食纖維。",economic:"溫帶水果，可鮮食、乾燥與加工。"},
+  "梨子": {nutrition:"含水分、膳食纖維、維生素 C與鉀。",economic:"重要溫帶水果，鮮食與加工市場需求穩定。"},
+  "櫻桃": {nutrition:"含維生素 C、鉀與多種多酚類抗氧化物質。",economic:"高單價水果，鮮食與禮品市場具有高經濟價值。"},
+  "柿子": {nutrition:"富含膳食纖維、β-胡蘿蔔素、維生素 C與鉀。",economic:"特色溫帶水果，可鮮食、乾燥與加工。"},
+  "石榴": {nutrition:"含維生素 C、葉酸、鉀與多酚類物質。",economic:"特色水果，鮮食與機能性食品市場具有發展性。"},
+  "百香果": {nutrition:"富含維生素 C、膳食纖維、維生素 A 前驅物與鉀。",economic:"高附加價值水果，常用於飲品、果汁與甜點。"},
+  "火龍果": {nutrition:"含維生素 C、膳食纖維、鎂與多種植物色素。",economic:"重要熱帶水果，鮮食、加工與外銷市場皆有需求。"},
+  "荔枝": {nutrition:"富含維生素 C、碳水化合物與鉀。",economic:"高價值季節性水果，鮮食、加工與外銷均具市場。"},
+  "龍眼": {nutrition:"提供碳水化合物、維生素 C與鉀。",economic:"可鮮食、烘乾製成果乾，也可用於食品加工。"},
+  "榴槤": {nutrition:"含碳水化合物、脂肪、鉀、維生素 C與膳食纖維。",economic:"高單價熱帶水果，鮮食與加工市場具有高經濟價值。"},
+  "椰子": {nutrition:"椰肉含脂肪與膳食纖維，椰水含鉀等電解質。",economic:"可供飲品、食品、油脂與加工產業使用，用途廣泛。"},
+  "酪梨": {nutrition:"富含單元不飽和脂肪、膳食纖維、鉀與葉酸。",economic:"高經濟價值水果，健康食品與餐飲市場需求持續增加。"},
+  "無花果": {nutrition:"含膳食纖維、鉀、鈣與多種植物化合物。",economic:"特色高價水果，可鮮食、乾燥與製成果醬。"}
+};
+
+const lightData = {
+  "太陽光":"自然太陽光，具有完整的日夜週期與光譜變化。",
+  "人造光":"可控制光照時間與強度，適合設施栽培與室內種植。"
+};
+
+const waterData = {
+  "一般水":["💧","適合一般植物栽培的基礎水源。"],
+  "乾淨水":["💦","污染物較低，適合作為穩定水源。"],
+  "高度純化水":["◇","溶解物質非常低，但不代表一定最適合植物。"]
+};
+
+let state = {
+  soil:"火山土",
+  crop:"番茄",
+  water:"乾淨水",
+  light:"太陽光",
+  fertilizer:"不施肥",
+  fertilizerAmount:"無"
+};
+
+function changeSoil(){
+  state.soil=document.getElementById("soilSelect").value;
+  document.getElementById("soilDesc").textContent=soilData[state.soil];
+  updateSummary();
+}
+
+function changeCrop(){
+  state.crop=document.getElementById("cropSelect").value;
+  const d=cropData[state.crop];
+  document.getElementById("cropName").textContent=state.crop;
+  document.getElementById("cropNutrition").textContent=d.nutrition;
+  document.getElementById("cropEconomic").textContent=d.economic;
+  updateSummary();
+}
+
+function changeWater(){
+  state.water=document.getElementById("waterSelect").value;
+  const d=waterData[state.water];
+  document.getElementById("waterVisual").textContent=d[0];
+  document.getElementById("waterName").textContent=state.water;
+  document.getElementById("waterDesc").textContent=d[1];
+  updateSummary();
+}
+
+function changeLight(){
+  state.light=document.getElementById("lightSelect").value;
+  document.getElementById("lightDesc").textContent=lightData[state.light];
+  updateSummary();
+}
+
+function changeFertilizer(){
+  state.fertilizer=document.getElementById("fertilizerSelect").value;
+  if(state.fertilizer==="不施肥"){
+    document.getElementById("fertilizerAmountSelect").value="無";
+    state.fertilizerAmount="無";
+  }
+  updateSummary();
+}
+
+function changeFertilizerAmount(){
+  state.fertilizerAmount=document.getElementById("fertilizerAmountSelect").value;
+  updateSummary();
+}
+
+function updateSummary(){
+  document.getElementById("summarySoil").textContent=state.soil;
+  document.getElementById("summaryCrop").textContent=state.crop;
+  document.getElementById("summaryWater").textContent=state.water;
+  document.getElementById("summaryLight").textContent=state.light;
+  document.getElementById("summaryFertilizer").textContent=state.fertilizer;
+  document.getElementById("summaryFertilizerAmount").textContent=state.fertilizerAmount;
+}
+
+function runSimulation(){
+  localStorage.setItem("agriSimulationState", JSON.stringify(state));
+  window.location.href = "result.html";
+}
+</script>
+</body>
+</html>
