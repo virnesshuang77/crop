@@ -525,9 +525,21 @@ button{
 
 .error-box p{
   color:var(--muted);
-  max-width:650px;
+  max-width:900px;
   margin:0 auto 18px;
   white-space:pre-line;
+  text-align:left;
+  background:#fafcfb;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:14px 16px;
+  font-family:
+    ui-monospace,SFMono-Regular,Menlo,Monaco,
+    Consolas,"Liberation Mono","Courier New",monospace;
+  font-size:12px;
+  line-height:1.65;
+  overflow:auto;
+  max-height:360px;
 }
 
 .retry-btn{
@@ -1203,25 +1215,54 @@ async function analyze(){
       body:JSON.stringify(payload)
     });
 
+    /*
+      先讀取 Worker 的「原始文字」。
+      這樣即使 Worker 回傳的不是 JSON，
+      也能把真正的錯誤內容顯示出來，方便除錯。
+    */
+    const rawText = await response.text();
+
     let data = null;
 
     try{
-      data = await response.json();
+      data = rawText ? JSON.parse(rawText) : null;
     }catch(error){
-      throw new Error("AI 服務回傳的資料不是有效 JSON。");
+
+      const preview = rawText
+        ? rawText.slice(0,1200)
+        : "(Worker 沒有回傳任何內容)";
+
+      throw new Error(
+        "Worker 回傳的不是有效 JSON。\n\n" +
+        "HTTP 狀態：" + response.status + "\n\n" +
+        "Worker 原始回應：\n" + preview
+      );
     }
 
     if(!response.ok){
 
-      throw new Error(
+      const workerError =
         data && data.error
           ? data.error
-          : "AI 分析服務發生錯誤，HTTP " + response.status
+          : data && data.message
+            ? data.message
+            : "未提供錯誤訊息";
+
+      throw new Error(
+        "Worker / AI 分析服務發生錯誤。\n\n" +
+        "HTTP 狀態：" + response.status + "\n\n" +
+        "錯誤內容：\n" + workerError
       );
     }
 
     if(!data || typeof data !== "object"){
-      throw new Error("AI 回傳內容格式錯誤。");
+
+      throw new Error(
+        "AI 回傳內容格式錯誤。\n\n" +
+        "HTTP 狀態：" + response.status + "\n\n" +
+        "Worker 原始回應：\n" +
+        (rawText ? rawText.slice(0,1200) : "(空白)")
+      );
     }
 
     renderResult(data);
