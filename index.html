@@ -605,7 +605,7 @@ let state = {
 function changeSoil(){
   state.soil=document.getElementById("soilSelect").value;
   document.getElementById("soilDesc").textContent=soilData[state.soil];
-  updateSummary();
+  renderLanguage();
 }
 
 function changeCrop(){
@@ -614,7 +614,7 @@ function changeCrop(){
   document.getElementById("cropName").textContent=state.crop;
   document.getElementById("cropNutrition").textContent=d.nutrition;
   document.getElementById("cropEconomic").textContent=d.economic;
-  updateSummary();
+  renderLanguage();
 }
 
 function changeWater(){
@@ -623,13 +623,13 @@ function changeWater(){
   document.getElementById("waterVisual").textContent=d[0];
   document.getElementById("waterName").textContent=state.water;
   document.getElementById("waterDesc").textContent=d[1];
-  updateSummary();
+  renderLanguage();
 }
 
 function changeLight(){
   state.light=document.getElementById("lightSelect").value;
   document.getElementById("lightDesc").textContent=lightData[state.light];
-  updateSummary();
+  renderLanguage();
 }
 
 function changeFertilizer(){
@@ -638,21 +638,18 @@ function changeFertilizer(){
     document.getElementById("fertilizerAmountSelect").value="無";
     state.fertilizerAmount="無";
   }
-  updateSummary();
+  renderLanguage();
 }
 
 function changeFertilizerAmount(){
   state.fertilizerAmount=document.getElementById("fertilizerAmountSelect").value;
-  updateSummary();
+  renderLanguage();
 }
 
 function updateSummary(){
-  document.getElementById("summarySoil").textContent=state.soil;
-  document.getElementById("summaryCrop").textContent=state.crop;
-  document.getElementById("summaryWater").textContent=state.water;
-  document.getElementById("summaryLight").textContent=state.light;
-  document.getElementById("summaryFertilizer").textContent=state.fertilizer;
-  document.getElementById("summaryFertilizerAmount").textContent=state.fertilizerAmount;
+  const values=[state.soil,state.crop,state.water,state.light,state.fertilizer,state.fertilizerAmount];
+  const ids=["summarySoil","summaryCrop","summaryWater","summaryLight","summaryFertilizer","summaryFertilizerAmount"];
+  values.forEach((value,i)=>document.getElementById(ids[i]).textContent=displayName(value));
 }
 
 function runSimulation(){
@@ -666,6 +663,84 @@ function runSimulation(){
 const cropNamesEN = {
   "番茄":"Tomato","生菜":"Lettuce","小白菜":"Bok choy","高麗菜":"Cabbage","菠菜":"Spinach","空心菜":"Water spinach","芥藍":"Chinese broccoli","青江菜":"Pak choi","芥菜":"Mustard greens","莧菜":"Amaranth","羽衣甘藍":"Kale","韭菜":"Chinese chives","辣椒":"Chili pepper","甜椒":"Bell pepper","小黃瓜":"Cucumber","茄子":"Eggplant","南瓜":"Pumpkin","櫛瓜":"Zucchini","苦瓜":"Bitter melon","絲瓜":"Luffa","冬瓜":"Winter melon","秋葵":"Okra","胡蘿蔔":"Carrot","馬鈴薯":"Potato","地瓜":"Sweet potato","山藥":"Chinese yam","蘿蔔":"Radish","甜菜根":"Beetroot","芋頭":"Taro","洋蔥":"Onion","大蒜":"Garlic","薑":"Ginger","毛豆":"Edamame","黃豆":"Soybean","綠豆":"Mung bean","紅豆":"Adzuki bean","豌豆":"Pea","四季豆":"Green bean","花生":"Peanut","水稻":"Rice","玉米":"Corn","小麥":"Wheat","大麥":"Barley","燕麥":"Oat","高粱":"Sorghum","小米":"Millet","草莓":"Strawberry","蘋果":"Apple","葡萄":"Grape","香蕉":"Banana","橘子":"Mandarin","柳橙":"Orange","檸檬":"Lemon","柚子":"Pomelo","鳳梨":"Pineapple","芒果":"Mango","木瓜":"Papaya","西瓜":"Watermelon","哈密瓜":"Cantaloupe","奇異果":"Kiwi","桃子":"Peach","水蜜桃":"Nectarine","李子":"Plum","梨子":"Pear","櫻桃":"Cherry","柿子":"Persimmon","石榴":"Pomegranate","百香果":"Passion fruit","火龍果":"Dragon fruit","荔枝":"Lychee","龍眼":"Longan","榴槤":"Durian","椰子":"Coconut","酪梨":"Avocado","無花果":"Fig"
 };
+const cropDataEN = {
+  "番茄": {nutrition:"Rich in vitamin C, potassium and lycopene.",economic:"An important fruit vegetable with stable demand for fresh produce, processing and food service."},
+  "生菜": {nutrition:"Contains vitamins A and K, folate and dietary fiber.",economic:"A common leafy green with steady demand in salad, food service and fresh markets."},
+  "小白菜": {nutrition:"Contains vitamins C and K, folate and dietary fiber.",economic:"A short-season leafy vegetable commonly grown in Asia with stable demand."},
+  "高麗菜": {nutrition:"Contains vitamins C and K, folate and dietary fiber.",economic:"An important leafy vegetable for fresh, food service and processing markets."},
+  "菠菜": {nutrition:"Contains folate, vitamin K, provitamin A, iron and magnesium.",economic:"A nutrient-rich leafy green with demand in fresh and processed markets."},
+  "空心菜": {nutrition:"Contains vitamins A, C and K plus dietary fiber.",economic:"A fast-growing leafy vegetable widely consumed in Asian markets."},
+  "芥藍": {nutrition:"Contains vitamins C and K, folate and dietary fiber.",economic:"An important Asian vegetable with steady food service and fresh-market demand."},
+  "青江菜": {nutrition:"Contains vitamins C and K, folate and calcium.",economic:"A common compact leafy vegetable suited to protected cultivation and fresh supply."},
+  "芥菜": {nutrition:"Contains vitamins C and K, folate and dietary fiber.",economic:"Used fresh, pickled and processed, giving it multiple market applications."},
+  "莧菜": {nutrition:"Contains vitamins A and C, folate, calcium and iron.",economic:"A heat-tolerant leafy vegetable with a stable consumer market in Asia."},
+  "羽衣甘藍": {nutrition:"Contains vitamins K and C, beta-carotene and dietary fiber.",economic:"A specialty crop for fresh produce, health foods, smoothies and processing."},
+  "韭菜": {nutrition:"Contains vitamins K and C, folate and dietary fiber.",economic:"Can be harvested repeatedly and is widely used in home cooking and food service."},
+  "辣椒": {nutrition:"Rich in vitamin C, provitamin A and capsaicin.",economic:"Used fresh, as a seasoning and in processing, with steady market demand."},
+  "甜椒": {nutrition:"Rich in vitamin C, provitamin A and antioxidant compounds.",economic:"A relatively high-value fruit vegetable important in fresh, food service and protected cultivation markets."},
+  "小黃瓜": {nutrition:"High in water and provides vitamin K, vitamin C and some dietary fiber.",economic:"In demand for fresh consumption, pickling and food service."},
+  "茄子": {nutrition:"Contains dietary fiber, potassium and various phytonutrients.",economic:"A common fruit vegetable with stable fresh and food service demand."},
+  "南瓜": {nutrition:"Rich in beta-carotene, potassium, vitamin C and dietary fiber.",economic:"Used fresh and processed, with good storage characteristics and broad food applications."},
+  "櫛瓜": {nutrition:"Contains vitamin C, potassium, folate and dietary fiber.",economic:"Common in food service and premium fresh markets and suitable for protected cultivation."},
+  "苦瓜": {nutrition:"Contains vitamin C, folate, potassium and dietary fiber.",economic:"An important specialty Asian vegetable with fresh and processing demand."},
+  "絲瓜": {nutrition:"Provides water, vitamin C, potassium and dietary fiber.",economic:"A common gourd vegetable with stable household and food service demand."},
+  "冬瓜": {nutrition:"Provides water, potassium and small amounts of vitamin C and dietary fiber.",economic:"Large fruits with good storage potential for fresh and processed uses."},
+  "秋葵": {nutrition:"Contains dietary fiber, vitamins C and K, and folate.",economic:"A specialty vegetable with value in fresh and health-food markets."},
+  "胡蘿蔔": {nutrition:"Rich in beta-carotene, dietary fiber and potassium.",economic:"An important root crop used fresh, for juice and in food processing."},
+  "馬鈴薯": {nutrition:"Rich in carbohydrates and potassium and provides vitamin C.",economic:"A major global food crop with extensive fresh and processed uses."},
+  "地瓜": {nutrition:"Provides carbohydrates, dietary fiber, potassium and beta-carotene.",economic:"An important root crop used fresh, baked and processed."},
+  "山藥": {nutrition:"Provides carbohydrates, dietary fiber, potassium and vitamin C.",economic:"Used as both a staple food and a specialty Asian food ingredient."},
+  "蘿蔔": {nutrition:"Contains vitamin C, potassium, folate and dietary fiber.",economic:"An important root vegetable used fresh, pickled and processed."},
+  "甜菜根": {nutrition:"Contains folate, potassium, dietary fiber and betalain pigments.",economic:"A specialty crop used in fresh produce, juice and health-food markets."},
+  "芋頭": {nutrition:"Rich in carbohydrates, dietary fiber and potassium.",economic:"Used fresh and processed into pastries, beverages and food ingredients."},
+  "洋蔥": {nutrition:"Contains vitamin C, folate, potassium and sulfur-containing compounds.",economic:"A major global seasoning vegetable with strong fresh and processing demand."},
+  "大蒜": {nutrition:"Contains vitamins C and B6, manganese and sulfur-containing compounds.",economic:"An important seasoning crop with stable fresh, culinary and processing demand."},
+  "薑": {nutrition:"Provides potassium, magnesium and gingerol-related plant compounds.",economic:"An important spice crop used fresh, processed, as a seasoning and as a food ingredient."},
+  "毛豆": {nutrition:"Rich in plant protein, dietary fiber, folate and vitamin K.",economic:"A high-value legume with strong fresh, frozen and processed-food demand."},
+  "黃豆": {nutrition:"Rich in plant protein, unsaturated fats and iron.",economic:"A major oilseed and protein crop used for tofu, soy milk and edible oil."},
+  "綠豆": {nutrition:"Provides plant protein, carbohydrates, folate and dietary fiber.",economic:"Used for sprouts, fillings, desserts and processed foods."},
+  "紅豆": {nutrition:"Rich in plant protein, dietary fiber, folate and potassium.",economic:"An important Asian food legume with steady demand for desserts, baking and processing."},
+  "豌豆": {nutrition:"Contains plant protein, dietary fiber, vitamin C and folate.",economic:"Used fresh, frozen and processed across many food applications."},
+  "四季豆": {nutrition:"Contains dietary fiber, vitamins C and K, and folate.",economic:"A common pod vegetable with stable fresh and food service demand."},
+  "花生": {nutrition:"Rich in plant protein, unsaturated fats, vitamin E and magnesium.",economic:"An important oilseed and food crop used for peanut oil, peanut butter and snacks."},
+  "水稻": {nutrition:"Primarily provides carbohydrates and is a major energy source in Asia.",economic:"One of the world's most important staple crops with a large agricultural value chain."},
+  "玉米": {nutrition:"Provides carbohydrates, dietary fiber, folate and various vitamins.",economic:"An important food, feed and industrial raw-material crop."},
+  "小麥": {nutrition:"Provides carbohydrates plus plant protein, iron and dietary fiber.",economic:"A core global staple used for flour, bread, noodles and many processed foods."},
+  "大麥": {nutrition:"Contains carbohydrates, dietary fiber, protein and various minerals.",economic:"Used for food, animal feed and a range of processing applications."},
+  "燕麥": {nutrition:"Rich in dietary fiber, beta-glucan, protein and magnesium.",economic:"An important grain for the health-food market, including oatmeal and beverages."},
+  "高粱": {nutrition:"Provides carbohydrates, plant protein and dietary fiber.",economic:"Used for food, feed and brewing, and valued as a relatively drought-tolerant crop."},
+  "小米": {nutrition:"Provides carbohydrates, magnesium, phosphorus and plant protein.",economic:"A specialty grain used in staple foods and health-oriented food markets."},
+  "草莓": {nutrition:"Rich in vitamin C, folate and antioxidant compounds.",economic:"A high-value fruit with strong fresh, dessert and processing demand."},
+  "蘋果": {nutrition:"Contains dietary fiber, vitamin C and various phytonutrients.",economic:"An important fruit crop with large fresh markets and juice and processing uses."},
+  "葡萄": {nutrition:"Contains vitamins C and K, potassium and polyphenols.",economic:"Used fresh, for juice, dried fruit and many processed products."},
+  "香蕉": {nutrition:"Rich in carbohydrates, potassium, vitamin B6 and dietary fiber.",economic:"A major tropical fruit with steady year-round fresh and processing demand."},
+  "橘子": {nutrition:"Rich in vitamin C, folate, potassium and dietary fiber.",economic:"An important citrus fruit used fresh and for juice processing."},
+  "柳橙": {nutrition:"Rich in vitamin C, folate, potassium and dietary fiber.",economic:"An important fruit for fresh consumption and the juice industry."},
+  "檸檬": {nutrition:"Rich in vitamin C, citric acid and plant compounds.",economic:"Widely used in beverages, food service, seasoning and processing."},
+  "柚子": {nutrition:"Contains vitamin C, potassium, folate and dietary fiber.",economic:"An important citrus fruit with distinctive fresh and seasonal-market demand."},
+  "鳳梨": {nutrition:"Rich in vitamin C, manganese and dietary fiber and contains bromelain.",economic:"An important tropical fruit used fresh, canned, for juice and processing."},
+  "芒果": {nutrition:"Rich in vitamin C, beta-carotene, folate and dietary fiber.",economic:"A high-value tropical fruit with strong fresh, juice and processing demand."},
+  "木瓜": {nutrition:"Rich in vitamin C, beta-carotene, folate and dietary fiber.",economic:"An important tropical fruit used fresh and in juice and food processing."},
+  "西瓜": {nutrition:"High in water and provides vitamin C, potassium and lycopene.",economic:"A large seasonal fruit with strong summer fresh-market demand."},
+  "哈密瓜": {nutrition:"Contains vitamin C, beta-carotene, potassium and water.",economic:"A relatively high-value melon for fresh and gift markets."},
+  "奇異果": {nutrition:"Rich in vitamins C and K, folate and dietary fiber.",economic:"A high-value fruit with stable demand in fresh and imported-fruit markets."},
+  "桃子": {nutrition:"Contains vitamin C, provitamin A, potassium and dietary fiber.",economic:"An important temperate fruit used fresh, canned and processed."},
+  "水蜜桃": {nutrition:"Contains vitamin C, beta-carotene, potassium and dietary fiber.",economic:"A premium specialty fruit with high fresh and gift-market value."},
+  "李子": {nutrition:"Contains vitamins C and K, potassium and dietary fiber.",economic:"A temperate fruit used fresh, dried and processed."},
+  "梨子": {nutrition:"Provides water, dietary fiber, vitamin C and potassium.",economic:"An important temperate fruit with stable fresh and processing demand."},
+  "櫻桃": {nutrition:"Contains vitamin C, potassium and antioxidant polyphenols.",economic:"A high-value fruit with strong fresh and gift-market value."},
+  "柿子": {nutrition:"Rich in dietary fiber, beta-carotene, vitamin C and potassium.",economic:"A specialty temperate fruit used fresh, dried and processed."},
+  "石榴": {nutrition:"Contains vitamin C, folate, potassium and polyphenols.",economic:"A specialty fruit with opportunities in fresh and functional-food markets."},
+  "百香果": {nutrition:"Rich in vitamin C, dietary fiber, provitamin A and potassium.",economic:"A high-value fruit commonly used in beverages, juice and desserts."},
+  "火龍果": {nutrition:"Contains vitamin C, dietary fiber, magnesium and plant pigments.",economic:"An important tropical fruit for fresh, processed and export markets."},
+  "荔枝": {nutrition:"Rich in vitamin C, carbohydrates and potassium.",economic:"A high-value seasonal fruit for fresh, processed and export markets."},
+  "龍眼": {nutrition:"Provides carbohydrates, vitamin C and potassium.",economic:"Used fresh, dried into longan fruit and in food processing."},
+  "榴槤": {nutrition:"Contains carbohydrates, fat, potassium, vitamin C and dietary fiber.",economic:"A high-value tropical fruit with strong fresh and processing demand."},
+  "椰子": {nutrition:"Coconut flesh provides fat and fiber, while coconut water provides electrolytes such as potassium.",economic:"Used across beverage, food, oil and processing industries."},
+  "酪梨": {nutrition:"Rich in monounsaturated fat, dietary fiber, potassium and folate.",economic:"A high-value fruit with growing demand in health-food and food-service markets."},
+  "無花果": {nutrition:"Contains dietary fiber, potassium, calcium and various plant compounds.",economic:"A specialty premium fruit used fresh, dried and for preserves."}
+};
+
 const uiEN = {
   title:"Agricultural Alchemy",
   subtitle:"Soil × Crop × Water × Light × Fertilizer — Explore the best combination for plant growth",
@@ -690,7 +765,8 @@ const uiEN = {
   none:"None", low:"Low", adequate:"Adequate", high:"High", excessive:"Excessive",
   sunlight:"Sunlight", artificial:"Artificial light",
   waterGeneralDesc:"Ordinary water quality with variable dissolved substances.", waterCleanDesc:"Low pollutant levels, suitable as a stable water source.", waterPureDesc:"Highly purified water with fewer dissolved minerals; not automatically better for plants.",
-  englishButton:"繁體中文"
+  englishButton:"繁體中文",
+  soilDescriptions:{"火山土":"Soil formed from weathered volcanic ash and rock.","沖積土":"Soil formed by river transport and sediment deposition, often suitable for cultivation.","沙漠土":"Soil formed in dry environments, often with lower organic matter and limited water retention.","海岸土":"Coastal sediment-derived soil, often with a higher sand fraction and faster drainage.","森林土":"Soil formed under long-term forest vegetation and organic-matter accumulation.","冰川沉積土":"Soil formed from rock fragments and minerals transported and deposited by glaciers.","石灰質土":"Soil containing relatively high amounts of calcium carbonate or limestone material.","紅土":"Highly weathered soil formed in warm, wet environments, often rich in iron and aluminum oxides.","黑土":"Dark soil rich in organic matter and often considered to have strong fertility potential.","泥炭土":"Soil formed from accumulated, incompletely decomposed plant material with high organic matter.","人工改良土":"Soil whose properties are adjusted by mixing or adding materials for specific cultivation needs."}
 };
 const cropGroupsEN = ["Leafy greens","Fruit vegetables","Root & tuber crops","Legumes","Grains","Fruits"];
 const soilEN = {"火山土":"Volcanic soil","沖積土":"Alluvial soil","沙漠土":"Desert soil","海岸土":"Coastal soil","森林土":"Forest soil","冰川沉積土":"Glacial sediment soil","石灰質土":"Calcareous soil","紅土":"Red soil","黑土":"Chernozem","泥炭土":"Peat soil","人工改良土":"Artificially amended soil"};
@@ -700,66 +776,135 @@ const lightEN={"太陽光":"Sunlight","人造光":"Artificial light"};
 const waterEN={"一般水":"General water","乾淨水":"Clean water","高度純化水":"Highly purified water"};
 
 function displayName(value){
-  if(state.language==="en") return cropNamesEN[value] || soilEN[value] || fertilizerEN[value] || amountEN[value] || lightEN[value] || waterEN[value] || value;
+  if(state.language === "en"){
+    return cropNamesEN[value] || soilEN[value] || fertilizerEN[value] || amountEN[value] || lightEN[value] || waterEN[value] || value;
+  }
   return value;
 }
-function setSelectLabels(selectId,map){
-  const el=document.getElementById(selectId); if(!el) return;
-  [...el.options].forEach(o=>{ o.textContent=map[o.value] || o.textContent; });
+
+function setSelectLabels(selectId, map){
+  const el=document.getElementById(selectId);
+  if(!el) return;
+
+  [...el.options].forEach(option=>{
+    // 永遠保留中文 key，避免切換語言後 state 被改成英文。
+    if(!option.dataset.zhValue){
+      option.dataset.zhValue = option.value || option.textContent.trim();
+    }
+
+    const zhValue = option.dataset.zhValue;
+    option.value = zhValue;
+    option.textContent = map[zhValue] || zhValue;
+  });
 }
+
 function renderLanguage(){
-  const en=state.language==="en";
-  document.documentElement.lang=en?"en":"zh-Hant";
-  document.title=en?"Agricultural Alchemy | Crop Simulation":"農作物煉金術｜Agricultural Alchemy";
-  document.getElementById("languageBtn").textContent=en?uiEN.englishButton:"English";
-  document.querySelector("h1").textContent=en?uiEN.title:"農作物煉金術";
-  document.querySelector(".subtitle").textContent=en?uiEN.subtitle:"土壤 × 作物 × 水質 × 光照 × 肥料　探索植物生長的最佳組合";
+  const en=state.language === "en";
+  document.documentElement.lang=en ? "en" : "zh-Hant";
+  document.title=en ? "Agricultural Alchemy | Crop Simulation" : "農作物煉金術｜Agricultural Alchemy";
+  document.getElementById("languageBtn").textContent=en ? uiEN.englishButton : "English";
+  document.querySelector("h1").textContent=en ? uiEN.title : "農作物煉金術";
+  document.querySelector(".subtitle").textContent=en ? uiEN.subtitle : "土壤 × 作物 × 水質 × 光照 × 肥料　探索植物生長的最佳組合";
 
-  const heads=document.querySelectorAll(".panel-title"), subs=document.querySelectorAll(".panel-sub"), badges=document.querySelectorAll(".badge");
-  const titles=en?[uiEN.soilTitle,uiEN.cropTitle,uiEN.lightTitle,uiEN.waterTitle,uiEN.fertTitle,uiEN.amountTitle]:["① 土壤","② 農作物","③ 光照","④ 水質","⑤ 肥料","⑥ 施肥量"];
-  const sub=en?[uiEN.soilSub,uiEN.cropSub,uiEN.lightSub,uiEN.waterSub,uiEN.fertSub,uiEN.amountSub]:["選擇植物生長的基礎介質","營養價值與經濟價值","植物獲取能量的主要來源","水的潔淨度","提供作物額外養分","設定施肥的用量等級"];
+  const heads=document.querySelectorAll(".panel-title");
+  const subs=document.querySelectorAll(".panel-sub");
+  const badges=document.querySelectorAll(".badge");
+  const titles=en
+    ? [uiEN.soilTitle,uiEN.cropTitle,uiEN.lightTitle,uiEN.waterTitle,uiEN.fertTitle,uiEN.amountTitle]
+    : ["① 土壤","② 農作物","③ 光照","④ 水質","⑤ 肥料","⑥ 施肥量"];
+  const sub=en
+    ? [uiEN.soilSub,uiEN.cropSub,uiEN.lightSub,uiEN.waterSub,uiEN.fertSub,uiEN.amountSub]
+    : ["選擇植物生長的基礎介質","營養價值與經濟價值","植物獲取能量的主要來源","水的潔淨度","提供作物額外養分","設定施肥的用量等級"];
   const badge=["SOIL","CROP","LIGHT","WATER","FERTILIZER","AMOUNT"];
-  heads.forEach((e,i)=>e.textContent=titles[i]); subs.forEach((e,i)=>e.textContent=sub[i]); badges.forEach((e,i)=>e.textContent=badge[i]);
-  document.querySelectorAll(".select-wrap label")[0].textContent=en?uiEN.soilLabel:"土壤種類";
-  document.querySelectorAll(".select-wrap label")[1].textContent=en?uiEN.cropLabel:"作物種類";
-  document.querySelectorAll(".select-wrap label")[2].textContent=en?uiEN.lightLabel:"光照方式";
-  document.querySelectorAll(".select-wrap label")[3].textContent=en?uiEN.waterLabel:"水質等級";
-  document.querySelectorAll(".select-wrap label")[4].textContent=en?uiEN.fertLabel:"肥料種類";
-  document.querySelectorAll(".select-wrap label")[5].textContent=en?uiEN.amountLabel:"施肥量";
+  heads.forEach((e,i)=>e.textContent=titles[i]);
+  subs.forEach((e,i)=>e.textContent=sub[i]);
+  badges.forEach((e,i)=>e.textContent=badge[i]);
 
-  setSelectLabels("soilSelect",en?soilEN:Object.fromEntries(Object.keys(soilEN).map(k=>[k,k])));
-  setSelectLabels("cropSelect",en?cropNamesEN:Object.fromEntries(Object.keys(cropNamesEN).map(k=>[k,k])));
-  setSelectLabels("lightSelect",en?lightEN:Object.fromEntries(Object.keys(lightEN).map(k=>[k,k])));
-  setSelectLabels("waterSelect",en?waterEN:Object.fromEntries(Object.keys(waterEN).map(k=>[k,k])));
-  setSelectLabels("fertilizerSelect",en?fertilizerEN:Object.fromEntries(Object.keys(fertilizerEN).map(k=>[k,k])));
-  setSelectLabels("fertilizerAmountSelect",en?amountEN:Object.fromEntries(Object.keys(amountEN).map(k=>[k,k])));
+  const labels=document.querySelectorAll(".select-wrap label");
+  const labelText=en
+    ? [uiEN.soilLabel,uiEN.cropLabel,uiEN.lightLabel,uiEN.waterLabel,uiEN.fertLabel,uiEN.amountLabel]
+    : ["土壤種類","作物種類","光照方式","水質等級","肥料種類","施肥量"];
+  labels.forEach((e,i)=>e.textContent=labelText[i]);
+
+  setSelectLabels("soilSelect",en ? soilEN : Object.fromEntries(Object.keys(soilEN).map(k=>[k,k])));
+  setSelectLabels("cropSelect",en ? cropNamesEN : Object.fromEntries(Object.keys(cropNamesEN).map(k=>[k,k])));
+  setSelectLabels("lightSelect",en ? lightEN : Object.fromEntries(Object.keys(lightEN).map(k=>[k,k])));
+  setSelectLabels("waterSelect",en ? waterEN : Object.fromEntries(Object.keys(waterEN).map(k=>[k,k])));
+  setSelectLabels("fertilizerSelect",en ? fertilizerEN : Object.fromEntries(Object.keys(fertilizerEN).map(k=>[k,k])));
+  setSelectLabels("fertilizerAmountSelect",en ? amountEN : Object.fromEntries(Object.keys(amountEN).map(k=>[k,k])));
+
+  // 依中文 key 恢復目前選擇，確保切換語言不會改變實際模擬條件。
+  document.getElementById("soilSelect").value=state.soil;
+  document.getElementById("cropSelect").value=state.crop;
+  document.getElementById("lightSelect").value=state.light;
+  document.getElementById("waterSelect").value=state.water;
+  document.getElementById("fertilizerSelect").value=state.fertilizer;
+  document.getElementById("fertilizerAmountSelect").value=state.fertilizerAmount;
+
   const groups=document.querySelectorAll("#cropSelect optgroup");
   const groupZH=["葉菜類","果菜類","根莖與塊莖類","豆類","穀物","水果"];
-  groups.forEach((g,i)=>g.label=en?cropGroupsEN[i]:groupZH[i]);
+  groups.forEach((g,i)=>g.label=en ? cropGroupsEN[i] : groupZH[i]);
 
-  document.getElementById("soilDesc").textContent=en?uiEN.soilDesc:soilData[state.soil];
+  document.getElementById("soilDesc").textContent=en ? uiEN.soilDescriptions[state.soil] : soilData[state.soil];
+
   const cd=cropData[state.crop];
   document.getElementById("cropName").textContent=displayName(state.crop);
-  if(en){
-    document.getElementById("cropNutrition").textContent="Crop-specific nutritional information is provided in the selected crop database.";
-    document.getElementById("cropEconomic").textContent="Crop-specific economic information is provided in the selected crop database.";
-  }else{
-    document.getElementById("cropNutrition").textContent=cd.nutrition;
-    document.getElementById("cropEconomic").textContent=cd.economic;
-  }
-  document.getElementById("lightDesc").textContent=en?(state.light==="太陽光"?uiEN.lightSun:uiEN.lightArtificial):lightData[state.light];
-  const wd=waterData[state.water];
-  document.getElementById("waterName").textContent=displayName(state.water);
-  document.getElementById("waterDesc").textContent=en?(state.water==="一般水"?uiEN.waterGeneralDesc:state.water==="乾淨水"?uiEN.waterCleanDesc:uiEN.waterPureDesc):wd[1];
-  document.querySelectorAll(".fert-note")[0].innerHTML=en?uiEN.fertilizerNote:"不額外施用肥料時，作物主要依靠土壤與水中的養分。<br>未來模型會依照不同肥料種類與施肥量計算養分補充效果。";
-  document.querySelectorAll(".fert-note")[1].innerHTML=en?uiEN.amountNote:"施肥量不是越高越好。未來模型會計算缺乏、適量與過量對作物生長的不同影響。";
-  document.querySelectorAll(".water-note")[0].innerHTML=en?uiEN.lightNote:"光照不代表越強越好。未來模型會加入 <b>光照強度、光週期與光飽和</b> 等參數。";
-  document.querySelectorAll(".water-note")[1].innerHTML=en?uiEN.waterNote:"水質不只是「越乾淨越好」。<br>未來模型會加入 <b>礦物離子、鹽分、pH</b> 等參數。";
+  document.getElementById("cropNutrition").textContent=en
+    ? cropDataEN[state.crop].nutrition
+    : cd.nutrition;
+  document.getElementById("cropEconomic").textContent=en
+    ? cropDataEN[state.crop].economic
+    : cd.economic;
 
-  const labels=en?[uiEN.summarySoil,uiEN.summaryCrop,uiEN.summaryWater,uiEN.summaryLight,uiEN.summaryFertilizer,uiEN.summaryAmount]:["土壤","作物","水質","光照","肥料","施肥量"];
-  document.querySelectorAll(".chip").forEach((e,i)=>{ const b=e.querySelector("b"); e.firstChild.textContent=labels[i]+"："; b.textContent=displayName([state.soil,state.crop,state.water,state.light,state.fertilizer,state.fertilizerAmount][i]); });
-  document.getElementById("runButton").textContent=en?uiEN.run:"⚗ 開始模擬 RUN";
-  document.querySelector(".result-title").textContent=en?uiEN.created:"🌱 模擬條件已建立";
+  document.getElementById("lightDesc").textContent=en
+    ? (state.light==="太陽光" ? uiEN.lightSun : uiEN.lightArtificial)
+    : lightData[state.light];
+
+  const wd=waterData[state.water];
+  document.getElementById("waterVisual").textContent=wd[0];
+  document.getElementById("waterName").textContent=displayName(state.water);
+  document.getElementById("waterDesc").textContent=en
+    ? (state.water==="一般水" ? uiEN.waterGeneralDesc : state.water==="乾淨水" ? uiEN.waterCleanDesc : uiEN.waterPureDesc)
+    : wd[1];
+
+  document.querySelectorAll(".fert-note")[0].innerHTML=en
+    ? uiEN.fertilizerNote
+    : "不額外施用肥料時，作物主要依靠土壤與水中的養分。未來模型會依照不同肥料種類與施肥量計算養分補充效果。";
+  document.querySelectorAll(".fert-note")[1].innerHTML=en
+    ? uiEN.amountNote
+    : "施肥量不是越高越好。未來模型會計算缺乏、適量與過量對作物生長的不同影響。";
+  document.querySelectorAll(".water-note")[0].innerHTML=en
+    ? uiEN.lightNote
+    : "光照不代表越強越好。未來模型會加入 <b>光照強度、光週期與光飽和</b> 等參數。";
+  document.querySelectorAll(".water-note")[1].innerHTML=en
+    ? uiEN.waterNote
+    : "水質不只是「越乾淨越好」。<br>未來模型會加入 <b>礦物離子、鹽分、pH</b> 等參數。";
+
+  const summaryLabels=en
+    ? [uiEN.summarySoil,uiEN.summaryCrop,uiEN.summaryWater,uiEN.summaryLight,uiEN.summaryFertilizer,uiEN.summaryAmount]
+    : ["土壤","作物","水質","光照","肥料","施肥量"];
+  const summaryValues=[state.soil,state.crop,state.water,state.light,state.fertilizer,state.fertilizerAmount];
+  document.querySelectorAll(".chip").forEach((e,i)=>{
+    const b=e.querySelector("b");
+    e.firstChild.textContent=summaryLabels[i]+"：";
+    b.textContent=displayName(summaryValues[i]);
+  });
+
+  document.querySelectorAll(".preview-desc b")[0].textContent=en ? uiEN.nutrition : "基本營養價值：";
+  document.querySelectorAll(".preview-desc b")[1].textContent=en ? uiEN.economic : "經濟價值：";
+  document.getElementById("runButton").textContent=en ? uiEN.run : "⚗ 開始模擬 RUN";
+  document.querySelector(".result-title").textContent=en ? uiEN.created : "🌱 模擬條件已建立";
+
+  // 同步按鈕狀態。
+  const selectedAmount=document.getElementById("fertilizerAmountSelect").value;
+  if(state.fertilizer==="不施肥"){
+    state.fertilizerAmount="無";
+    document.getElementById("fertilizerAmountSelect").value="無";
+  }else if(selectedAmount){
+    state.fertilizerAmount=selectedAmount;
+  }
+
+  updateSummary();
 }
 
 function toggleLanguage(){
