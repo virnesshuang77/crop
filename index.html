@@ -28,12 +28,12 @@ body{
     var(--bg);
 }
 header{text-align:center;padding:34px 20px 24px;position:relative}
-.header-actions{position:absolute;right:20px;top:20px;display:flex;gap:8px;align-items:center}
+.header-actions{display:flex;justify-content:center;gap:8px;align-items:center;margin-top:14px}
 .note-btn,.lang-btn{border:1px solid var(--line);background:#fff;color:var(--accent-dark);border-radius:999px;padding:8px 13px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(35,55,43,.06);white-space:nowrap}
 .note-btn:hover,.lang-btn:hover{background:#f4f8f4}
 .lang-btn{border:1px solid var(--line);background:#fff;color:var(--accent-dark);border-radius:999px;padding:8px 13px;font-size:12px;font-weight:800;cursor:pointer;box-shadow:0 3px 10px rgba(35,55,43,.06)}
 .lang-btn:hover{background:#f4f8f4}
-@media(max-width:650px){.header-actions{right:12px;top:12px}.note-btn,.lang-btn{padding:7px 9px;font-size:10px}}
+@media(max-width:650px){.header-actions{margin-top:12px}.note-btn,.lang-btn{padding:7px 9px;font-size:10px}}
 .logo{
   display:inline-flex;align-items:center;gap:10px;
   color:var(--accent-dark);font-size:13px;letter-spacing:2px;font-weight:700
@@ -209,13 +209,14 @@ select:focus{
 
 <body>
 <header>
-  <div class="header-actions">
-  <button class="note-btn" id="noteBtn" type="button">📓 筆記本</button>
-  <button class="lang-btn" id="languageBtn" type="button">English</button>
-</div>
   <div class="logo"><div class="logo-mark">✦</div>AGRICULTURAL ALCHEMY</div>
   <h1>農作物煉金術</h1>
   <p class="subtitle">土壤 × 作物 × 水質 × 光照 × 肥料　探索植物生長的最佳組合</p>
+
+  <div class="header-actions">
+    <button class="note-btn" id="noteBtn" type="button">📓 筆記本</button>
+    <button class="lang-btn" id="languageBtn" type="button">English</button>
+  </div>
 </header>
 
 <main>
