@@ -95,6 +95,7 @@ button{
 }
 
 .lang-btn-result{border:1px solid var(--border);background:#fff;color:var(--green-dark);border-radius:10px;padding:10px 13px;cursor:pointer;font-weight:700;white-space:nowrap}.lang-btn-result:hover{background:var(--green-soft)}
+.note-btn-result{border:1px solid var(--border);background:#fff;color:var(--green-dark);border-radius:10px;padding:10px 13px;cursor:pointer;font-weight:700;white-space:nowrap}.note-btn-result:hover{background:var(--green-soft)}
 .back-btn{
   border:1px solid var(--border);
   background:#fff;
@@ -852,7 +853,7 @@ button{
       </div>
     </div>
 
-    <div style="display:flex;align-items:center;gap:8px"><button class="lang-btn-result" id="languageBtn" type="button">English</button><button class="back-btn" id="backBtn">
+    <div style="display:flex;align-items:center;gap:8px"><button class="note-btn-result" id="noteBtn" type="button">📓 筆記本</button><button class="lang-btn-result" id="languageBtn" type="button">English</button><button class="back-btn" id="backBtn">
       ← 重新模擬
     </button></div>
   </header>
@@ -1291,7 +1292,7 @@ const resultMaps={
   amount:{"無":"None","少量":"Low","適量":"Adequate","高量":"High","過量":"Excessive"}
 };
 const resultTextZH={
-  title:"農作物煉金術",subtitle:"AI 農業模擬結果",conditions:"本次模擬條件",soil:"土壤",crop:"農作物",light:"光照",water:"水質",fertilizer:"肥料",amount:"施肥量",soilDesc:"土壤環境",cropDesc:"栽培作物",lightDesc:"光照來源",waterDesc:"灌溉水源",fertDesc:"肥料種類",amountDesc:"施肥程度",loading:"AI 正在分析這組農業條件…",loadingSub:"正在綜合土壤、作物、光照、水質與施肥條件。",errorTitle:"AI 分析暫時無法完成",retry:"重新分析",overview:"AI 預期結果總覽",overall:"整體適合度",growth:"生長速度",health:"健康程度",waterFit:"水分適合度",nutrient:"養分適合度",lightFit:"光照適合度",yield:"預估產量",growthDesc:"作物生長的預期速度",healthDesc:"作物整體健康與抗逆性",waterFitDesc:"水質與水分供應的適合度",nutrientDesc:"土壤養分與施肥的平衡度",lightFitDesc:"光照條件的適合程度",yieldDesc:"相對產量表現預估",overallEval:"整體評估",aiSummary:"AI 分析摘要",analysis:"整體分析",soilAnalysis:"土壤分析",waterAnalysis:"水質分析",lightAnalysis:"光照分析",fertilizerAnalysis:"肥料分析",recommendations:"AI 建議與優化方向",risks:"潛在風險與限制",final:"AI 最終結論",confidence:"AI 信心度",disclaimer:"※ 本頁結果為 AI 根據輸入條件所做的模擬估算，不代表實際農業試驗結果。實際生長仍會受到品種、溫度、濕度、病蟲害、土壤成分及栽培管理等因素影響。",back:"← 重新模擬",language:"English"
+  title:"農作物煉金術",subtitle:"AI 農業模擬結果",conditions:"本次模擬條件",soil:"土壤",crop:"農作物",light:"光照",water:"水質",fertilizer:"肥料",amount:"施肥量",soilDesc:"土壤環境",cropDesc:"栽培作物",lightDesc:"光照來源",waterDesc:"灌溉水源",fertDesc:"肥料種類",amountDesc:"施肥程度",loading:"AI 正在分析這組農業條件…",loadingSub:"正在綜合土壤、作物、光照、水質與施肥條件。",errorTitle:"AI 分析暫時無法完成",retry:"重新分析",overview:"AI 預期結果總覽",overall:"整體適合度",growth:"生長速度",health:"健康程度",waterFit:"水分適合度",nutrient:"養分適合度",lightFit:"光照適合度",yield:"預估產量",growthDesc:"作物生長的預期速度",healthDesc:"作物整體健康與抗逆性",waterFitDesc:"水質與水分供應的適合度",nutrientDesc:"土壤養分與施肥的平衡度",lightFitDesc:"光照條件的適合程度",yieldDesc:"相對產量表現預估",overallEval:"整體評估",aiSummary:"AI 分析摘要",analysis:"整體分析",soilAnalysis:"土壤分析",waterAnalysis:"水質分析",lightAnalysis:"光照分析",fertilizerAnalysis:"肥料分析",recommendations:"AI 建議與優化方向",risks:"潛在風險與限制",final:"AI 最終結論",confidence:"AI 信心度",disclaimer:"※ 本頁結果為 AI 根據輸入條件所做的模擬估算，不代表實際農業試驗結果。實際生長仍會受到品種、溫度、濕度、病蟲害、土壤成分及栽培管理等因素影響。",back:"← 重新模擬",notes:"📓 筆記本",language:"English"
 };
 const resultTextEN={
   title:"Agricultural Alchemy",subtitle:"AI Agricultural Simulation Results",conditions:"Simulation Conditions",soil:"Soil",crop:"Crop",light:"Light",water:"Water",fertilizer:"Fertilizer",amount:"Fertilizer Amount",soilDesc:"Growing medium",cropDesc:"Selected crop",lightDesc:"Lighting source",waterDesc:"Irrigation source",fertDesc:"Fertilizer type",amountDesc:"Application level",loading:"AI is analyzing these agricultural conditions…",loadingSub:"Combining soil, crop, light, water and fertilizer conditions.",errorTitle:"AI analysis could not be completed",retry:"Analyze Again",overview:"AI Expected Results Overview",overall:"Overall suitability",growth:"Growth rate",health:"Plant health",waterFit:"Water suitability",nutrient:"Nutrient suitability",lightFit:"Light suitability",yield:"Yield potential",growthDesc:"Expected growth speed",healthDesc:"Overall health and stress tolerance",waterFitDesc:"Suitability of water quality and supply",nutrientDesc:"Balance of soil nutrients and fertilization",lightFitDesc:"Suitability of lighting conditions",yieldDesc:"Relative yield performance estimate",overallEval:"Overall assessment",aiSummary:"AI Analysis Summary",analysis:"Overall analysis",soilAnalysis:"Soil analysis",waterAnalysis:"Water analysis",lightAnalysis:"Light analysis",fertilizerAnalysis:"Fertilizer analysis",recommendations:"AI Recommendations & Optimization",risks:"Potential Risks & Limitations",final:"AI Final Conclusion",confidence:"AI confidence",disclaimer:"※ Results are AI-based simulation estimates from the selected conditions and do not represent actual agricultural trial results. Actual growth is also affected by cultivar, temperature, humidity, pests, soil composition and cultivation management.",back:"← Simulate Again",language:"繁體中文"
@@ -1824,6 +1825,7 @@ function renderResultLanguage(){
   document.title=en ? "Agricultural Alchemy | AI Simulation Results" : "農作物煉金術｜AI 模擬結果";
 
   document.getElementById("languageBtn").textContent=t.language;
+  document.getElementById("noteBtn").textContent=t.notes;
   document.getElementById("backBtn").textContent=t.back;
   renderCommentLanguage();
 
@@ -1890,6 +1892,8 @@ function renderResultLanguage(){
   document.querySelector(".confidence-label").textContent=t.confidence;
   document.querySelector(".disclaimer").textContent=t.disclaimer;
 }
+
+document.getElementById("noteBtn").addEventListener("click",()=>{ window.location.href="note.html"; });
 
 document.getElementById("languageBtn").addEventListener("click",()=>{
   currentLanguage=currentLanguage === "en" ? "zh" : "en";
