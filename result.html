@@ -1321,50 +1321,77 @@ const commentTextEN={
   defaultName:"Anonymous"
 };
 
-const COMMENT_STORAGE_KEY="agriAlchemyComments_v1";
+const COMMENTS_API =
+  "https://agri-alchemy.virnesshuang.workers.dev/api/comments";
 
-function getCurrentSimulationKey(){
-  /*
-    用本次模擬的條件建立留言分類。
-    同一組模擬條件會看到同一區留言；
-    不需要登入，也不需要額外帳號系統。
-  */
-  const s=currentState || {};
-  return JSON.stringify({
-    soil:s.soil || "",
-    crop:s.crop || "",
-    light:s.light || "",
-    water:s.water || "",
-    fertilizer:s.fertilizer || "",
-    fertilizerAmount:s.fertilizerAmount || ""
-  });
-}
+/*
+  公開留言板：
+  不再使用 localStorage 儲存留言。
+  所有訪客都透過 Cloudflare Worker
+  讀取 /api/comments，因此看到的是同一份留言。
+*/
 
-function loadComments(){
+let publicComments = [];
+
+
+/* =========================
+   取得公開留言
+========================= */
+
+async function loadComments(){
+
   try{
-    const all=JSON.parse(localStorage.getItem(COMMENT_STORAGE_KEY) || "{}");
-    const key=getCurrentSimulationKey();
-    return Array.isArray(all[key]) ? all[key] : [];
+
+    const response = await fetch(
+      COMMENTS_API,
+      {
+        method:"GET",
+        cache:"no-store"
+      }
+    );
+
+    if(!response.ok){
+      throw new Error(
+        "Comments API HTTP " + response.status
+      );
+    }
+
+    const data = await response.json();
+
+    publicComments =
+      Array.isArray(data.comments)
+        ? data.comments
+        : [];
+
+    return publicComments;
+
   }catch(error){
-    console.error("Comment load error:",error);
+
+    console.error(
+      "Comment load error:",
+      error
+    );
+
+    publicComments = [];
+
     return [];
+
   }
 }
 
-function saveComments(comments){
-  try{
-    const all=JSON.parse(localStorage.getItem(COMMENT_STORAGE_KEY) || "{}");
-    all[getCurrentSimulationKey()]=comments.slice(0,100);
-    localStorage.setItem(COMMENT_STORAGE_KEY,JSON.stringify(all));
-  }catch(error){
-    console.error("Comment save error:",error);
-  }
-}
+
+/* =========================
+   留言時間
+========================= */
 
 function formatCommentTime(timestamp){
+
   try{
+
     return new Date(timestamp).toLocaleString(
-      currentLanguage==="en" ? "en-US" : "zh-TW",
+      currentLanguage === "en"
+        ? "en-US"
+        : "zh-TW",
       {
         year:"numeric",
         month:"2-digit",
@@ -1373,122 +1400,417 @@ function formatCommentTime(timestamp){
         minute:"2-digit"
       }
     );
+
   }catch(error){
+
     return "";
+
   }
 }
 
-function renderComments(){
-  const list=document.getElementById("commentList");
-  const count=document.getElementById("commentCount");
+
+/* =========================
+   顯示留言
+========================= */
+
+async function renderComments(){
+
+  const list =
+    document.getElementById("commentList");
+
+  const count =
+    document.getElementById("commentCount");
+
   if(!list) return;
 
-  const comments=loadComments();
-  const t=currentLanguage==="en" ? commentTextEN : commentTextZH;
+  const comments =
+    await loadComments();
+
+  const t =
+    currentLanguage === "en"
+      ? commentTextEN
+      : commentTextZH;
+
 
   if(count){
-    count.textContent=comments.length ? ` · ${comments.length} ${t.count}` : "";
+
+    count.textContent =
+      comments.length
+        ? ` · ${comments.length} ${t.count}`
+        : "";
+
   }
+
 
   if(!comments.length){
-    list.innerHTML=`<div class="comment-empty">${escapeHtml(t.empty)}</div>`;
+
+    list.innerHTML =
+      `<div class="comment-empty">
+        ${escapeHtml(t.empty)}
+      </div>`;
+
     return;
+
   }
 
-  list.innerHTML=comments.map(comment=>`
-    <article class="comment-item">
-      <div class="comment-head">
-        <span class="comment-user">${escapeHtml(comment.name || t.defaultName)}</span>
-        <span class="comment-time">${escapeHtml(formatCommentTime(comment.createdAt))}</span>
-      </div>
-      <div class="comment-body">${escapeHtml(comment.text || "")}</div>
-    </article>
-  `).join("");
+
+  list.innerHTML =
+    comments.map(comment => `
+
+      <article class="comment-item">
+
+        <div class="comment-head">
+
+          <span class="comment-user">
+            ${escapeHtml(
+              comment.nickname ||
+              t.defaultName
+            )}
+          </span>
+
+          <span class="comment-time">
+            ${escapeHtml(
+              formatCommentTime(
+                comment.created_at
+              )
+            )}
+          </span>
+
+        </div>
+
+        <div class="comment-body">
+          ${escapeHtml(
+            comment.comment || ""
+          )}
+        </div>
+
+      </article>
+
+    `).join("");
 }
+
+
+/* =========================
+   留言板語言
+========================= */
 
 function renderCommentLanguage(){
-  const t=currentLanguage==="en" ? commentTextEN : commentTextZH;
 
-  const title=document.getElementById("commentBoardTitle");
-  const nameLabel=document.getElementById("commentNameLabel");
-  const textLabel=document.getElementById("commentTextLabel");
-  const name=document.getElementById("commentName");
-  const text=document.getElementById("commentText");
-  const submit=document.getElementById("commentSubmit");
+  const t =
+    currentLanguage === "en"
+      ? commentTextEN
+      : commentTextZH;
 
-  if(title) title.textContent=t.title;
-  if(nameLabel) nameLabel.textContent=t.name;
-  if(textLabel) textLabel.textContent=t.message;
-  if(name) name.placeholder=t.namePlaceholder;
-  if(text) text.placeholder=t.messagePlaceholder;
-  if(submit) submit.textContent=t.submit;
+  const title =
+    document.getElementById(
+      "commentBoardTitle"
+    );
+
+  const nameLabel =
+    document.getElementById(
+      "commentNameLabel"
+    );
+
+  const textLabel =
+    document.getElementById(
+      "commentTextLabel"
+    );
+
+  const name =
+    document.getElementById(
+      "commentName"
+    );
+
+  const text =
+    document.getElementById(
+      "commentText"
+    );
+
+  const submit =
+    document.getElementById(
+      "commentSubmit"
+    );
+
+
+  if(title)
+    title.textContent = t.title;
+
+  if(nameLabel)
+    nameLabel.textContent = t.name;
+
+  if(textLabel)
+    textLabel.textContent = t.message;
+
+  if(name)
+    name.placeholder =
+      t.namePlaceholder;
+
+  if(text)
+    text.placeholder =
+      t.messagePlaceholder;
+
+  if(submit)
+    submit.textContent =
+      t.submit;
+
+
+  /*
+    重新從 Cloudflare 取得公開留言。
+  */
 
   renderComments();
 }
 
-function submitComment(){
-  const nameInput=document.getElementById("commentName");
-  const textInput=document.getElementById("commentText");
-  const submit=document.getElementById("commentSubmit");
 
-  if(!nameInput || !textInput) return;
+/* =========================
+   發表公開留言
+========================= */
 
-  const t=currentLanguage==="en" ? commentTextEN : commentTextZH;
+async function submitComment(){
 
-  const name=(nameInput.value.trim() || t.defaultName).slice(0,30);
-  const message=textInput.value.trim().slice(0,500);
+  const nameInput =
+    document.getElementById(
+      "commentName"
+    );
 
-  if(!message){
-    textInput.focus();
+  const textInput =
+    document.getElementById(
+      "commentText"
+    );
+
+  const submit =
+    document.getElementById(
+      "commentSubmit"
+    );
+
+
+  if(
+    !nameInput ||
+    !textInput ||
+    !submit
+  ){
+
     return;
+
   }
 
-  submit.disabled=true;
 
-  const comments=loadComments();
-  comments.unshift({
-    name:name,
-    text:message,
-    createdAt:new Date().toISOString()
-  });
+  const t =
+    currentLanguage === "en"
+      ? commentTextEN
+      : commentTextZH;
 
-  saveComments(comments);
-  textInput.value="";
-  renderComments();
 
-  submit.disabled=false;
-  textInput.focus();
+  const name =
+    (
+      nameInput.value.trim() ||
+      t.defaultName
+    )
+    .slice(0,30);
+
+
+  const message =
+    textInput.value
+      .trim()
+      .slice(0,500);
+
+
+  if(!message){
+
+    textInput.focus();
+
+    return;
+
+  }
+
+
+  submit.disabled = true;
+
+
+  try{
+
+    const response =
+      await fetch(
+        COMMENTS_API,
+        {
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:JSON.stringify({
+            nickname:name,
+            comment:message
+          })
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(!response.ok){
+
+      throw new Error(
+        data?.error ||
+        "留言發送失敗"
+      );
+
+    }
+
+
+    /*
+      暱稱仍然可以存在自己的瀏覽器，
+      方便下次不用重新輸入。
+
+      注意：
+      這裡只儲存「自己的暱稱」，
+      不儲存留言。
+    */
+
+    localStorage.setItem(
+      "agriAlchemyCommentName",
+      name
+    );
+
+
+    textInput.value = "";
+
+
+    /*
+      重新從 Cloudflare 讀取，
+      確認所有人共用的留言已經出現。
+    */
+
+    await renderComments();
+
+
+    textInput.focus();
+
+
+  }catch(error){
+
+    console.error(
+      "Comment submit error:",
+      error
+    );
+
+
+    alert(
+      currentLanguage === "en"
+        ? "Failed to post the comment. Please try again."
+        : "留言發送失敗，請稍後再試。"
+    );
+
+
+  }finally{
+
+    submit.disabled = false;
+
+  }
 }
 
+
+/* =========================
+   初始化留言板
+========================= */
+
 function initComments(){
-  const nameInput=document.getElementById("commentName");
-  const textInput=document.getElementById("commentText");
-  const submit=document.getElementById("commentSubmit");
+
+  const nameInput =
+    document.getElementById(
+      "commentName"
+    );
+
+  const textInput =
+    document.getElementById(
+      "commentText"
+    );
+
+  const submit =
+    document.getElementById(
+      "commentSubmit"
+    );
+
 
   if(!submit) return;
 
-  const savedName=localStorage.getItem("agriAlchemyCommentName");
-  if(savedName && nameInput){
-    nameInput.value=savedName;
+
+  /*
+    只記住自己的暱稱。
+  */
+
+  const savedName =
+    localStorage.getItem(
+      "agriAlchemyCommentName"
+    );
+
+
+  if(
+    savedName &&
+    nameInput
+  ){
+
+    nameInput.value =
+      savedName;
+
   }
+
 
   if(nameInput){
-    nameInput.addEventListener("input",()=>{
-      localStorage.setItem("agriAlchemyCommentName",nameInput.value.slice(0,30));
-    });
+
+    nameInput.addEventListener(
+      "input",
+      ()=>{
+        localStorage.setItem(
+          "agriAlchemyCommentName",
+          nameInput.value
+            .slice(0,30)
+        );
+      }
+    );
+
   }
 
-  submit.addEventListener("click",submitComment);
 
-  textInput?.addEventListener("keydown",(event)=>{
-    if((event.ctrlKey || event.metaKey) && event.key==="Enter"){
-      event.preventDefault();
-      submitComment();
+  submit.addEventListener(
+    "click",
+    submitComment
+  );
+
+
+  textInput?.addEventListener(
+    "keydown",
+    (event)=>{
+
+      if(
+        (event.ctrlKey ||
+         event.metaKey) &&
+        event.key === "Enter"
+      ){
+
+        event.preventDefault();
+
+        submitComment();
+
+      }
+
     }
-  });
+  );
+
+
+  /*
+    初次載入時直接從 Cloudflare
+    取得所有公開留言。
+  */
 
   renderCommentLanguage();
+
 }
+
 
 function resultDisplay(v,map){
   return currentLanguage === "en" ? (map[v] || resultCropEN[v] || v) : v;
