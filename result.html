@@ -708,6 +708,133 @@ button{
     font-size:42px;
   }
 }
+
+/* =========================
+   Comment Board
+========================= */
+.comment-board{
+  margin-top:16px;
+}
+.comment-form{
+  border:1px solid var(--border);
+  background:#f8fbf9;
+  border-radius:13px;
+  padding:14px;
+  margin-bottom:14px;
+}
+.comment-form-row{
+  display:flex;
+  gap:9px;
+  align-items:flex-end;
+}
+.comment-input-wrap{
+  flex:1;
+}
+.comment-input-label{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+  margin-bottom:5px;
+}
+.comment-name,
+.comment-text{
+  width:100%;
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--text);
+  border-radius:10px;
+  padding:10px 12px;
+  font:inherit;
+  outline:none;
+}
+.comment-name:focus,
+.comment-text:focus{
+  border-color:#9fc4ae;
+  box-shadow:0 0 0 3px rgba(47,125,87,.08);
+}
+.comment-text{
+  min-height:76px;
+  resize:vertical;
+  line-height:1.6;
+}
+.comment-submit{
+  border:0;
+  background:var(--green);
+  color:#fff;
+  border-radius:10px;
+  padding:10px 16px;
+  cursor:pointer;
+  font-weight:700;
+  white-space:nowrap;
+}
+.comment-submit:hover{
+  background:var(--green-dark);
+}
+.comment-submit:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+.comment-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.comment-empty{
+  text-align:center;
+  color:var(--muted);
+  border:1px dashed var(--border);
+  border-radius:11px;
+  padding:20px 12px;
+  font-size:13px;
+}
+.comment-item{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:12px 14px;
+  background:#fff;
+}
+.comment-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:5px;
+}
+.comment-user{
+  font-weight:700;
+  color:var(--green-dark);
+}
+.comment-time{
+  color:#929c96;
+  font-size:11px;
+  white-space:nowrap;
+}
+.comment-body{
+  color:#536159;
+  font-size:14px;
+  white-space:pre-line;
+  word-break:break-word;
+}
+.comment-count{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:400;
+}
+@media(max-width:600px){
+  .comment-form-row{
+    flex-direction:column;
+    align-items:stretch;
+  }
+  .comment-submit{
+    width:100%;
+  }
+  .comment-head{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:2px;
+  }
+}
+
 </style>
 </head>
 
@@ -1015,6 +1142,43 @@ button{
       </div>
     </section>
 
+
+    <!-- Comment Board -->
+    <section class="section comment-board">
+      <h2 class="section-title">
+        <span class="icon">💬</span>
+        <span id="commentBoardTitle">留言板</span>
+        <span class="comment-count" id="commentCount"></span>
+      </h2>
+
+      <div class="comment-form">
+        <div class="comment-form-row">
+          <div class="comment-input-wrap">
+            <label class="comment-input-label" for="commentName" id="commentNameLabel">暱稱</label>
+            <input
+              class="comment-name"
+              id="commentName"
+              maxlength="30"
+              placeholder="輸入暱稱"
+              autocomplete="nickname"
+            >
+          </div>
+          <div class="comment-input-wrap" style="flex:2">
+            <label class="comment-input-label" for="commentText" id="commentTextLabel">留言</label>
+            <textarea
+              class="comment-text"
+              id="commentText"
+              maxlength="500"
+              placeholder="分享一下你的想法..."
+            ></textarea>
+          </div>
+          <button class="comment-submit" id="commentSubmit" type="button">發表留言</button>
+        </div>
+      </div>
+
+      <div class="comment-list" id="commentList"></div>
+    </section>
+
     <div class="disclaimer">
       ※ 本頁結果為 AI 根據輸入條件所做的模擬估算，不代表實際農業試驗結果。
       實際生長仍會受到品種、溫度、濕度、病蟲害、土壤成分及栽培管理等因素影響。
@@ -1133,6 +1297,199 @@ const resultTextEN={
   title:"Agricultural Alchemy",subtitle:"AI Agricultural Simulation Results",conditions:"Simulation Conditions",soil:"Soil",crop:"Crop",light:"Light",water:"Water",fertilizer:"Fertilizer",amount:"Fertilizer Amount",soilDesc:"Growing medium",cropDesc:"Selected crop",lightDesc:"Lighting source",waterDesc:"Irrigation source",fertDesc:"Fertilizer type",amountDesc:"Application level",loading:"AI is analyzing these agricultural conditions…",loadingSub:"Combining soil, crop, light, water and fertilizer conditions.",errorTitle:"AI analysis could not be completed",retry:"Analyze Again",overview:"AI Expected Results Overview",overall:"Overall suitability",growth:"Growth rate",health:"Plant health",waterFit:"Water suitability",nutrient:"Nutrient suitability",lightFit:"Light suitability",yield:"Yield potential",growthDesc:"Expected growth speed",healthDesc:"Overall health and stress tolerance",waterFitDesc:"Suitability of water quality and supply",nutrientDesc:"Balance of soil nutrients and fertilization",lightFitDesc:"Suitability of lighting conditions",yieldDesc:"Relative yield performance estimate",overallEval:"Overall assessment",aiSummary:"AI Analysis Summary",analysis:"Overall analysis",soilAnalysis:"Soil analysis",waterAnalysis:"Water analysis",lightAnalysis:"Light analysis",fertilizerAnalysis:"Fertilizer analysis",recommendations:"AI Recommendations & Optimization",risks:"Potential Risks & Limitations",final:"AI Final Conclusion",confidence:"AI confidence",disclaimer:"※ Results are AI-based simulation estimates from the selected conditions and do not represent actual agricultural trial results. Actual growth is also affected by cultivar, temperature, humidity, pests, soil composition and cultivation management.",back:"← Simulate Again",language:"繁體中文"
 };
 
+
+const commentTextZH={
+  title:"留言板",
+  name:"暱稱",
+  namePlaceholder:"輸入暱稱",
+  message:"留言",
+  messagePlaceholder:"分享一下你的想法...",
+  submit:"發表留言",
+  empty:"還沒有留言，來留下第一則吧！",
+  count:"則留言",
+  defaultName:"匿名使用者"
+};
+const commentTextEN={
+  title:"Comments",
+  name:"Name",
+  namePlaceholder:"Enter a name",
+  message:"Comment",
+  messagePlaceholder:"Share your thoughts...",
+  submit:"Post",
+  empty:"No comments yet. Be the first to leave one!",
+  count:"comments",
+  defaultName:"Anonymous"
+};
+
+const COMMENT_STORAGE_KEY="agriAlchemyComments_v1";
+
+function getCurrentSimulationKey(){
+  /*
+    用本次模擬的條件建立留言分類。
+    同一組模擬條件會看到同一區留言；
+    不需要登入，也不需要額外帳號系統。
+  */
+  const s=currentState || {};
+  return JSON.stringify({
+    soil:s.soil || "",
+    crop:s.crop || "",
+    light:s.light || "",
+    water:s.water || "",
+    fertilizer:s.fertilizer || "",
+    fertilizerAmount:s.fertilizerAmount || ""
+  });
+}
+
+function loadComments(){
+  try{
+    const all=JSON.parse(localStorage.getItem(COMMENT_STORAGE_KEY) || "{}");
+    const key=getCurrentSimulationKey();
+    return Array.isArray(all[key]) ? all[key] : [];
+  }catch(error){
+    console.error("Comment load error:",error);
+    return [];
+  }
+}
+
+function saveComments(comments){
+  try{
+    const all=JSON.parse(localStorage.getItem(COMMENT_STORAGE_KEY) || "{}");
+    all[getCurrentSimulationKey()]=comments.slice(0,100);
+    localStorage.setItem(COMMENT_STORAGE_KEY,JSON.stringify(all));
+  }catch(error){
+    console.error("Comment save error:",error);
+  }
+}
+
+function formatCommentTime(timestamp){
+  try{
+    return new Date(timestamp).toLocaleString(
+      currentLanguage==="en" ? "en-US" : "zh-TW",
+      {
+        year:"numeric",
+        month:"2-digit",
+        day:"2-digit",
+        hour:"2-digit",
+        minute:"2-digit"
+      }
+    );
+  }catch(error){
+    return "";
+  }
+}
+
+function renderComments(){
+  const list=document.getElementById("commentList");
+  const count=document.getElementById("commentCount");
+  if(!list) return;
+
+  const comments=loadComments();
+  const t=currentLanguage==="en" ? commentTextEN : commentTextZH;
+
+  if(count){
+    count.textContent=comments.length ? ` · ${comments.length} ${t.count}` : "";
+  }
+
+  if(!comments.length){
+    list.innerHTML=`<div class="comment-empty">${escapeHtml(t.empty)}</div>`;
+    return;
+  }
+
+  list.innerHTML=comments.map(comment=>`
+    <article class="comment-item">
+      <div class="comment-head">
+        <span class="comment-user">${escapeHtml(comment.name || t.defaultName)}</span>
+        <span class="comment-time">${escapeHtml(formatCommentTime(comment.createdAt))}</span>
+      </div>
+      <div class="comment-body">${escapeHtml(comment.text || "")}</div>
+    </article>
+  `).join("");
+}
+
+function renderCommentLanguage(){
+  const t=currentLanguage==="en" ? commentTextEN : commentTextZH;
+
+  const title=document.getElementById("commentBoardTitle");
+  const nameLabel=document.getElementById("commentNameLabel");
+  const textLabel=document.getElementById("commentTextLabel");
+  const name=document.getElementById("commentName");
+  const text=document.getElementById("commentText");
+  const submit=document.getElementById("commentSubmit");
+
+  if(title) title.textContent=t.title;
+  if(nameLabel) nameLabel.textContent=t.name;
+  if(textLabel) textLabel.textContent=t.message;
+  if(name) name.placeholder=t.namePlaceholder;
+  if(text) text.placeholder=t.messagePlaceholder;
+  if(submit) submit.textContent=t.submit;
+
+  renderComments();
+}
+
+function submitComment(){
+  const nameInput=document.getElementById("commentName");
+  const textInput=document.getElementById("commentText");
+  const submit=document.getElementById("commentSubmit");
+
+  if(!nameInput || !textInput) return;
+
+  const t=currentLanguage==="en" ? commentTextEN : commentTextZH;
+
+  const name=(nameInput.value.trim() || t.defaultName).slice(0,30);
+  const message=textInput.value.trim().slice(0,500);
+
+  if(!message){
+    textInput.focus();
+    return;
+  }
+
+  submit.disabled=true;
+
+  const comments=loadComments();
+  comments.unshift({
+    name:name,
+    text:message,
+    createdAt:new Date().toISOString()
+  });
+
+  saveComments(comments);
+  textInput.value="";
+  renderComments();
+
+  submit.disabled=false;
+  textInput.focus();
+}
+
+function initComments(){
+  const nameInput=document.getElementById("commentName");
+  const textInput=document.getElementById("commentText");
+  const submit=document.getElementById("commentSubmit");
+
+  if(!submit) return;
+
+  const savedName=localStorage.getItem("agriAlchemyCommentName");
+  if(savedName && nameInput){
+    nameInput.value=savedName;
+  }
+
+  if(nameInput){
+    nameInput.addEventListener("input",()=>{
+      localStorage.setItem("agriAlchemyCommentName",nameInput.value.slice(0,30));
+    });
+  }
+
+  submit.addEventListener("click",submitComment);
+
+  textInput?.addEventListener("keydown",(event)=>{
+    if((event.ctrlKey || event.metaKey) && event.key==="Enter"){
+      event.preventDefault();
+      submitComment();
+    }
+  });
+
+  renderCommentLanguage();
+}
+
 function resultDisplay(v,map){
   return currentLanguage === "en" ? (map[v] || resultCropEN[v] || v) : v;
 }
@@ -1146,6 +1503,7 @@ function renderResultLanguage(){
 
   document.getElementById("languageBtn").textContent=t.language;
   document.getElementById("backBtn").textContent=t.back;
+  renderCommentLanguage();
 
   // Header
   document.querySelector(".brand h1").textContent=t.title;
@@ -1718,6 +2076,7 @@ window.addEventListener("DOMContentLoaded",()=>{
 
   try{
     loadState();
+    initComments();
     analyze();
   }catch(error){
 
