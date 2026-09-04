@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="農作物煉金術｜公開留言">
+<title>農作物煉金術｜留言</title>
+
+<style>
+*{box-sizing:border-box}
+
+:root{
+  --green:#2f7d57;
+  --green-dark:#20583d;
+  --green-light:#eaf5ee;
+  --green-soft:#f5faf7;
+  --text:#26352d;
+  --muted:#718078;
+  --border:#dfe8e2;
+  --danger:#d95c55;
+  --shadow:0 8px 26px rgba(38,67,52,.07);
+}
+
+body{
+  margin:0;
+  background:#f6f8f7;
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC","Microsoft JhengHei","PingFang TC",sans-serif;
+  line-height:1.6;
+}
+
+button,input,textarea{font:inherit}
+
+.container{
+  width:min(900px,calc(100% - 28px));
+  margin:0 auto;
+  padding:22px 0 40px;
+}
+
+/* Header */
+.header{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  padding:18px 20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:16px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo{
+  width:46px;
+  height:46px;
+  border-radius:13px;
+  background:var(--green-light);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  flex:none;
+}
+
+.brand h1{
+  margin:0;
+  font-size:21px;
+  letter-spacing:.4px;
+}
+
+.brand p{
+  margin:1px 0 0;
+  color:var(--muted);
+  font-size:12px;
+}
+
+.header-actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.top-btn{
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--green-dark);
+  border-radius:10px;
+  padding:8px 11px;
+  cursor:pointer;
+  font-size:12px;
+  font-weight:700;
+  white-space:nowrap;
+  transition:.2s;
+}
+
+.top-btn:hover{
+  background:var(--green-soft);
+  border-color:#9fc4ae;
+}
+
+.top-btn.primary{
+  background:var(--green);
+  border-color:var(--green);
+  color:#fff;
+}
+
+.top-btn.primary:hover{
+  background:var(--green-dark);
+}
+
+/* Section */
+.section{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:16px;
+  box-shadow:var(--shadow);
+  padding:20px;
+  margin-bottom:16px;
+}
+
+.section-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:19px;
+  font-weight:700;
+  margin:0;
+}
+
+.section-title .icon{font-size:20px}
+
+.comment-count{
+  color:var(--muted);
+  font-size:12px;
+  font-weight:500;
+  margin-left:2px;
+}
+
+.intro{
+  margin:5px 0 0 29px;
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* Form */
+.comment-form{
+  margin-top:16px;
+  padding:15px;
+  background:var(--green-soft);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+
+.form-row{
+  display:flex;
+  gap:10px;
+  align-items:flex-end;
+}
+
+.field{
+  min-width:0;
+}
+
+.field.name{width:180px}
+.field.message{flex:1}
+
+label{
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
+  margin:0 0 5px 2px;
+}
+
+input,textarea{
+  width:100%;
+  border:1px solid #d5e2da;
+  background:#fff;
+  color:var(--text);
+  border-radius:9px;
+  padding:9px 10px;
+  outline:none;
+  transition:.2s;
+}
+
+input:focus,textarea:focus{
+  border-color:#8dbba0;
+  box-shadow:0 0 0 3px rgba(47,125,87,.08);
+}
+
+textarea{
+  min-height:42px;
+  max-height:130px;
+  resize:vertical;
+}
+
+.submit-btn{
+  border:0;
+  background:var(--green);
+  color:#fff;
+  border-radius:9px;
+  padding:10px 14px;
+  cursor:pointer;
+  font-weight:700;
+  white-space:nowrap;
+}
+
+.submit-btn:hover{background:var(--green-dark)}
+.submit-btn:disabled{opacity:.55;cursor:not-allowed}
+
+/* Comments */
+.list-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:20px 0 10px;
+  padding-bottom:8px;
+  border-bottom:1px solid var(--border);
+}
+
+.list-head span{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.refresh-btn{
+  border:1px solid var(--border);
+  background:#fff;
+  color:var(--green-dark);
+  border-radius:8px;
+  padding:5px 9px;
+  cursor:pointer;
+  font-size:11px;
+}
+
+.refresh-btn:hover{background:var(--green-soft)}
+
+.comment-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.comment-card{
+  border:1px solid var(--border);
+  background:#fbfdfc;
+  border-radius:11px;
+  padding:13px 14px;
+}
+
+.comment-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.comment-author{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-weight:700;
+  font-size:13px;
+}
+
+.avatar{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  background:var(--green-light);
+  color:var(--green-dark);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  flex:none;
+}
+
+.comment-time{
+  color:#9aa69f;
+  font-size:10px;
+  white-space:nowrap;
+}
+
+.comment-text{
+  margin:8px 0 0 35px;
+  color:#405047;
+  font-size:13px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.empty{
+  text-align:center;
+  padding:34px 15px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.status{
+  margin-top:10px;
+  font-size:11px;
+  color:var(--muted);
+  min-height:17px;
+}
+
+.status.error{color:var(--danger)}
+
+.loading{
+  text-align:center;
+  padding:28px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.disclaimer{
+  text-align:center;
+  color:#9aa69f;
+  font-size:10px;
+  line-height:1.7;
+  padding:0 8px;
+}
+
+/* Mobile */
+@media(max-width:700px){
+  .container{
+    width:min(100% - 18px,900px);
+    padding-top:12px;
+  }
+
+  .header{
+    padding:14px;
+    border-radius:13px;
+  }
+
+  .logo{
+    width:40px;
+    height:40px;
+    font-size:23px;
+  }
+
+  .brand h1{font-size:18px}
+  .brand p{font-size:10px}
+
+  .header-actions{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .top-btn{
+    padding:6px 9px;
+    font-size:10px;
+  }
+
+  .section{
+    padding:14px;
+    border-radius:13px;
+  }
+
+  .section-title{font-size:17px}
+  .intro{margin-left:27px}
+
+  .form-row{
+    flex-direction:column;
+    align-items:stretch;
+  }
+
+  .field.name,.field.message{width:100%}
+
+  .submit-btn{width:100%}
+
+  .comment-top{
+    align-items:flex-start;
+  }
+
+  .comment-time{
+    font-size:9px;
+  }
+
+  .comment-text{
+    margin-left:0;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+  <header class="header">
+    <div class="brand">
+      <div class="logo">🌱</div>
+      <div>
+        <h1>農作物煉金術</h1>
+        <p id="brandSubtitle">AI 農業模擬 × 公開留言</p>
+      </div>
+    </div>
+
+    <div class="header-actions">
+      <button class="top-btn" id="langBtn" type="button">English</button>
+      <button class="top-btn primary" id="backBtn" type="button">← 回到分析</button>
+    </div>
+  </header>
+
+  <section class="section">
+    <h2 class="section-title">
+      <span class="icon">💬</span>
+      <span id="title">留言</span>
+      <span class="comment-count" id="commentCount"></span>
+    </h2>
+
+    <p class="intro" id="intro">
+      歡迎分享你的想法、使用心得，或對農業模擬結果的看法。
+    </p>
+
+    <div class="comment-form">
+      <div class="form-row">
+        <div class="field name">
+          <label for="commentName" id="nameLabel">暱稱</label>
+          <input id="commentName" maxlength="30" placeholder="輸入暱稱" autocomplete="nickname">
+        </div>
+
+        <div class="field message">
+          <label for="commentText" id="textLabel">留言</label>
+          <textarea id="commentText" maxlength="500" placeholder="分享一下你的想法..."></textarea>
+        </div>
+
+        <button class="submit-btn" id="submitBtn" type="button">發表留言</button>
+      </div>
+
+      <div class="status" id="status"></div>
+    </div>
+
+    <div class="list-head">
+      <span id="latestLabel">最新留言</span>
+      <button class="refresh-btn" id="refreshBtn" type="button">↻ 重新整理</button>
+    </div>
+
+    <div class="comment-list" id="commentList">
+      <div class="loading" id="loading">正在載入留言…</div>
+    </div>
+  </section>
+
+  <div class="disclaimer" id="disclaimer">
+    ※ 留言內容由網站使用者自行發布，僅代表留言者個人看法。
+  </div>
+
+</div>
+
+<script>
+"use strict";
+
+const COMMENTS_API = "https://agri-alchemy.virnesshuang.workers.dev/api/comments";
+const NICKNAME_KEY = "agriAlchemyCommentNickname_v1";
+
+const i18n = {
+  zh: {
+    brandSubtitle:"AI 農業模擬 × 公開留言",
+    title:"留言",
+    intro:"歡迎分享你的想法、使用心得，或對農業模擬結果的看法。",
+    nameLabel:"暱稱",
+    namePlaceholder:"輸入暱稱",
+    textLabel:"留言",
+    textPlaceholder:"分享一下你的想法...",
+    submit:"發表留言",
+    latest:"最新留言",
+    refresh:"↻ 重新整理",
+    loading:"正在載入留言…",
+    empty:"目前還沒有留言，成為第一位留言的人吧！",
+    back:"← 回到分析",
+    loadError:"留言載入失敗，請稍後再試。",
+    submitEmpty:"請輸入留言內容。",
+    submitSuccess:"留言已發表！",
+    submitError:"留言發表失敗，請稍後再試。",
+    noName:"匿名使用者",
+    comments:"則留言",
+    disclaimer:"※ 留言內容由網站使用者自行發布，僅代表留言者個人看法。",
+    lang:"English"
+  },
+  en: {
+    brandSubtitle:"AI Agriculture Simulation × Public Notes",
+    title:"Notes",
+    intro:"Share your thoughts, experience, or ideas about the agricultural simulation.",
+    nameLabel:"Nickname",
+    namePlaceholder:"Enter a nickname",
+    textLabel:"Message",
+    textPlaceholder:"Share your thoughts...",
+    submit:"Post",
+    latest:"Latest Notes",
+    refresh:"↻ Refresh",
+    loading:"Loading notes…",
+    empty:"No notes yet. Be the first to leave one!",
+    back:"← Back to Analysis",
+    loadError:"Failed to load notes. Please try again later.",
+    submitEmpty:"Please enter a message.",
+    submitSuccess:"Your note has been posted!",
+    submitError:"Failed to post your note. Please try again.",
+    noName:"Anonymous",
+    comments:"notes",
+    disclaimer:"※ Notes are posted by website users and represent their individual opinions.",
+    lang:"中文"
+  }
+};
+
+let language = localStorage.getItem("agriAlchemyNoteLang") || "zh";
+
+function t(key){
+  return i18n[language][key] || key;
+}
+
+function escapeHtml(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function formatTime(value){
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+
+  return d.toLocaleString(
+    language === "zh" ? "zh-TW" : "en-US",
+    {
+      year:"numeric",
+      month:"2-digit",
+      day:"2-digit",
+      hour:"2-digit",
+      minute:"2-digit"
+    }
+  );
+}
+
+function applyLanguage(){
+  document.documentElement.lang = language === "zh" ? "zh-Hant" : "en";
+
+  document.getElementById("brandSubtitle").textContent = t("brandSubtitle");
+  document.getElementById("title").textContent = t("title");
+  document.getElementById("intro").textContent = t("intro");
+  document.getElementById("nameLabel").textContent = t("nameLabel");
+  document.getElementById("commentName").placeholder = t("namePlaceholder");
+  document.getElementById("textLabel").textContent = t("textLabel");
+  document.getElementById("commentText").placeholder = t("textPlaceholder");
+  document.getElementById("submitBtn").textContent = t("submit");
+  document.getElementById("latestLabel").textContent = t("latest");
+  document.getElementById("refreshBtn").textContent = t("refresh");
+  document.getElementById("backBtn").textContent = t("back");
+  document.getElementById("disclaimer").textContent = t("disclaimer");
+  document.getElementById("langBtn").textContent = t("lang");
+
+  renderComments(window.currentComments || []);
+}
+
+function renderComments(comments){
+  const list = document.getElementById("commentList");
+  const count = document.getElementById("commentCount");
+
+  count.textContent = comments.length ? `· ${comments.length} ${t("comments")}` : "";
+
+  if (!comments.length){
+    list.innerHTML = `<div class="empty">${escapeHtml(t("empty"))}</div>`;
+    return;
+  }
+
+  list.innerHTML = comments.map(comment => {
+    const nickname = comment.nickname || t("noName");
+    const text = comment.comment || "";
+    const initial = Array.from(nickname.trim())[0] || "👤";
+
+    return `
+      <article class="comment-card">
+        <div class="comment-top">
+          <div class="comment-author">
+            <span class="avatar">${escapeHtml(initial)}</span>
+            <span>${escapeHtml(nickname)}</span>
+          </div>
+          <time class="comment-time">${escapeHtml(formatTime(comment.created_at))}</time>
+        </div>
+        <div class="comment-text">${escapeHtml(text)}</div>
+      </article>
+    `;
+  }).join("");
+}
+
+async function loadComments(){
+  const list = document.getElementById("commentList");
+  list.innerHTML = `<div class="loading">${escapeHtml(t("loading"))}</div>`;
+
+  try{
+    const response = await fetch(COMMENTS_API, {
+      method:"GET",
+      cache:"no-store"
+    });
+
+    if (!response.ok) throw new Error("HTTP " + response.status);
+
+    const data = await response.json();
+    const comments = Array.isArray(data.comments) ? data.comments : [];
+
+    window.currentComments = comments;
+    renderComments(comments);
+  }catch(error){
+    console.error("loadComments:", error);
+    list.innerHTML = `<div class="empty">${escapeHtml(t("loadError"))}</div>`;
+  }
+}
+
+async function submitComment(){
+  const nameInput = document.getElementById("commentName");
+  const textInput = document.getElementById("commentText");
+  const submitBtn = document.getElementById("submitBtn");
+  const status = document.getElementById("status");
+
+  const nickname = nameInput.value.trim() || t("noName");
+  const comment = textInput.value.trim();
+
+  status.className = "status";
+
+  if (!comment){
+    status.textContent = t("submitEmpty");
+    status.classList.add("error");
+    return;
+  }
+
+  submitBtn.disabled = true;
+  status.textContent = "";
+
+  try{
+    const response = await fetch(COMMENTS_API, {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({nickname, comment})
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok || data.success !== true){
+      throw new Error(data.error || "HTTP " + response.status);
+    }
+
+    localStorage.setItem(NICKNAME_KEY, nickname);
+    textInput.value = "";
+    status.textContent = t("submitSuccess");
+
+    await loadComments();
+  }catch(error){
+    console.error("submitComment:", error);
+    status.textContent = t("submitError");
+    status.classList.add("error");
+  }finally{
+    submitBtn.disabled = false;
+  }
+}
+
+document.getElementById("submitBtn").addEventListener("click", submitComment);
+document.getElementById("refreshBtn").addEventListener("click", loadComments);
+
+document.getElementById("commentText").addEventListener("keydown", event => {
+  if ((event.ctrlKey || event.metaKey) && event.key === "Enter"){
+    submitComment();
+  }
+});
+
+document.getElementById("langBtn").addEventListener("click", () => {
+  language = language === "zh" ? "en" : "zh";
+  localStorage.setItem("agriAlchemyNoteLang", language);
+  applyLanguage();
+});
+
+document.getElementById("backBtn").addEventListener("click", () => {
+  window.location.href = "index.html";
+});
+
+const savedNickname = localStorage.getItem(NICKNAME_KEY);
+if (savedNickname){
+  document.getElementById("commentName").value = savedNickname;
+}
+
+applyLanguage();
+loadComments();
+</script>
+</body>
+</html>
